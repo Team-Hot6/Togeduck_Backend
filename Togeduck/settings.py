@@ -47,6 +47,9 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    # channels 충돌을 피하기 위해 맨 위
+    "channels",
+    
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -146,6 +149,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "Togeduck.wsgi.application"
+ASGI_APPLICATION = "Togeduck.wsgi.application"
 
 
 # Database
