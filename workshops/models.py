@@ -2,8 +2,6 @@ from django.db import models
 from users.models import User
 
 
-# Create your models here.
-
 class Hobby(models.Model):
     category = models.CharField(max_length=10)
 
@@ -16,8 +14,6 @@ class Location(models.Model):
     def __str__(self):
         return str(self.district)
 
-    def __str__(self):
-        return str(self.district)
 
 class Workshop(models.Model):
     category = models.ForeignKey(Hobby, on_delete=models.CASCADE)
@@ -36,9 +32,6 @@ class Workshop(models.Model):
 
     def __str__(self):
         return str(self.title)
-    
-    def __str__(self):
-        return str(self.title)
 
 
 class Review(models.Model):
@@ -50,9 +43,3 @@ class Review(models.Model):
 
     def __str__(self):
         return str(self.content)
-
-
-
-
-
-
