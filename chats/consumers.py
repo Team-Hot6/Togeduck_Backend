@@ -38,29 +38,43 @@ class CreateRoom(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
-        msg = text_data_json['room_id']
-        print(msg)
+        room_id = text_data_json['room_id']
+        message = text_data_json['message']
+        
+        response_json = {
+            'message':message
+            }
 
         await self.channel_layer.group_send(
-            self.room_group_name, {"type": "chat_message", "message": msg}
+            self.room_group_name,
+            {
+                'type': 'chat_message',
+                'message': json.dumps(response_json)
+            }
         )
+        
+    # Receive message from room group
+    async def chat_message(self, event):
+        message = event["message"]
+
+        # Send message to WebSocket
+        await self.send(text_data=json.dumps({"message": message}))
 
     @database_sync_to_async
     def get_user_db(self, user_id):
-        user = User.objects.get()
+        user = User.objects.filter(id=user_id)
+        if user:
+            return user[0]
+        return None
     
+    @database_sync_to_async
+    def get_chatroom(self, room_id):
+        room = ChatRoom.objects.filter(id=room_id)
+        if room:
+            return room[0]
+        return None
+    
+    @database_sync_to_async
+    def create_chat_log(self, room_id, sender, content):
+        RoomMessage.objects.create(room=room_id, user=sender, content=content)
 
-
-#     # Receive message from WebSocket
-#     async def receive(self, text_data):
-#         text_data_json = json.loads(text_data)
-#         message = text_data_json["message"]
-
-#         # Send message to room group
-
-#     # Receive message from room group
-#     async def chat_message(self, event):
-#         message = event["message"]
-
-#         # Send message to WebSocket
-#         await self.send(text_data=json.dumps({"message": message}))
