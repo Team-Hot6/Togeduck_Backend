@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 from articles.models import Article
-from articles.serializers import ArticleSerializer
+from articles.serializers import ArticleSerializer, CommentSerializer
 from rest_framework.response import Response
 from rest_framework import status, permissions
 from rest_framework.generics import get_object_or_404
@@ -49,4 +49,13 @@ class ArticleDetailView(APIView):
             article.delete()
             return Response({"msg":"게시글 삭제 완료!"}, status=status.HTTP_200_OK)
         return Response({"msg":"게시글을 삭제할 수 있는 권한이 없습니다!"}, status=status.HTTP_403_FORBIDDEN)
+
+
+# 게시글의 댓글
+class CommentView(APIView):
+    def get(self, request, article_id):
+        article = get_object_or_404(Article, id=article_id)
+        comments = article.comment_article.all()
+        serializer = CommentSerializer(comments, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
