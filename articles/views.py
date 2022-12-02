@@ -36,8 +36,17 @@ class ArticleDetailView(APIView):
     def put(self, request, article_id):
         article = get_object_or_404(Article, id=article_id)
         serializer = ArticleSerializer(article, data=request.data)
+        
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, article_id):
+        article = get_object_or_404(Article, id=article_id)
+        
+        if article.user == request.user:
+            article.delete()
+            return Response({"msg":"게시글 삭제 완료!"}, status=status.HTTP_200_OK)
+        return Response({"msg":"게시글을 삭제할 수 있는 권한이 없습니다!"}, status=status.HTTP_403_FORBIDDEN)
 
