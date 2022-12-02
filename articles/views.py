@@ -22,13 +22,22 @@ class ArticleCreateView(APIView):
         
         serialzier = ArticleSerializer(data=request.data)
         if serialzier.is_valid():
-            serialzier.save(user=request.user)
+            serialzier.save()
             return Response(serialzier.data, status=status.HTTP_201_CREATED)
         return Response(serialzier.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# 게시글 상세페이지
+# 게시글 상세페이지(조회/수정/삭제)
 class ArticleDetailView(APIView):
     def get(self, request, article_id):
         article = get_object_or_404(Article, id=article_id)
         serializer = ArticleSerializer(article)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def put(self, request, article_id):
+        article = get_object_or_404(Article, id=article_id)
+        serializer = ArticleSerializer(article, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
