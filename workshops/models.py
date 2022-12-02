@@ -14,6 +14,7 @@ class Location(models.Model):
     def __str__(self):
         return str(self.district)
 
+
 class Workshop(models.Model):
     category = models.ForeignKey(Hobby, on_delete=models.CASCADE)
     host = models.ForeignKey(User, on_delete=models.CASCADE, related_name='workshop_host')
