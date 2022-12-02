@@ -2,8 +2,6 @@ from django.db import models
 from users.models import User
 
 
-# Create your models here.
-
 class Hobby(models.Model):
     category = models.CharField(max_length=10)
 
@@ -33,12 +31,3 @@ class Workshop(models.Model):
 
     def __str__(self):
         return str(self.title)
-    
-
-
-
-
-
-
-
-
