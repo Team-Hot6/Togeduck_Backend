@@ -25,3 +25,4 @@ class UserView(APIView):
 # 로그인 토큰
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer 
+
