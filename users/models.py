@@ -29,13 +29,13 @@ class UserManager(BaseUserManager):
 
 # 사용자모델 
 class User(AbstractBaseUser):
-    email = models.EmailField("이메일" ,max_length=255, unique=True) 
+    email = models.EmailField("이메일" , max_length=255, unique=True) 
     nickname = models.CharField("닉네임", max_length=15, unique=True)
-    hobby = models.ForeignKey('workshops.Hobby', on_delete=models.CASCADE)
+    hobby = models.ForeignKey('workshops.Hobby', null=True, on_delete=models.CASCADE)
     profile_image = models.ImageField(blank=True)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
-    objects = UserManager() 
+    objects = UserManager()
 
     USERNAME_FIELD = 'email'
     # REQUIRED_FIELDS = ['email', 'nickname',]

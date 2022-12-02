@@ -12,7 +12,7 @@ class Location(models.Model):
     address = models.CharField(max_length=20)
 
 class Workshop(models.Model):
-    category = models.ForeignKey(Hobby, on_delete=models.CASCADE)
+    category = models.ForeignKey(Hobby, on_delete=models.CASCADE, related_name='workshop_category')
     host = models.ForeignKey(User, on_delete=models.CASCADE, related_name='workshop_host')
     date = models.DateTimeField()
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
@@ -24,7 +24,8 @@ class Workshop(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     participant = models.ManyToManyField(User, related_name='member', symmetrical=False)
     likes = models.ManyToManyField(User, related_name='workshop_likes')
-    
+    apply_status = models.CharField(max_length=10)  # 마이페이지 - 신청 현황
+    review = models.TextField(max_length=500)  # 워크샵 샹세페이지 - 후기
 
 
 
