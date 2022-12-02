@@ -47,6 +47,9 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    # channels 충돌을 피하기 위해 맨 위
+    "channels",
+    
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -65,10 +68,19 @@ INSTALLED_APPS = [
     "workshops",
 ]
 
+ASGI_APPLICATION = "Togeduck.asgi.application"
+WSGI_APPLICATION = "Togeduck.wsgi.application"
+
+CHANNEL_LAYERS = {
+    'default' : {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer'
+    }
+}
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    "corsheaders.middleware.CorsMiddleware",
+    "corsheaders.middleware.CorsMiddleware", # cors
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -143,9 +155,6 @@ TEMPLATES = [
         },
     },
 ]
-
-WSGI_APPLICATION = "Togeduck.wsgi.application"
-
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
