@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from users.models import User # 모델
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer # jwt 토큰 커스터마이징
+from users.models import User 
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer 
 import re
 
 
@@ -27,23 +27,23 @@ class UserSerializer(serializers.ModelSerializer):
       
         if not email_validation.fullmatch(email) :
         
-            raise serializers.ValidationError("이메일 형식 틀림ㅋㅋ")
+            raise serializers.ValidationError(detail={"email":"이메일 형식 다시 작성해주세여"})
         
 
         if User.objects.filter(email=data["email"]).exists():
-            raise serializers.ValidationError("이메일 중복 있음ㅋㅋㅋ")
+            raise serializers.ValidationError(detail={"email":"이메일 중복입니닼ㅋ"})
 
 
         if User.objects.filter(nickname=data["nickname"]).exists():
-                raise serializers.ValidationError(detail={"error":"중복 닉네임 있는데요?ㅋㅋ"})
+                raise serializers.ValidationError(detail={"nickname":"중복 닉네임 있는데요?ㅋㅋ"})
 
         
         if len(data["nickname"]) < 2:
-            raise serializers.ValidationError("nickname은 2자 이상임 ")
+            raise serializers.ValidationError(detail={"nickname":"nickname은 2자 이상임 "})
                           
 
         elif len(data["password"]) < 2 and password:
-            raise serializers.ValidationError("비밀번호는 2자 이상 특수문자 포함해")
+            raise serializers.ValidationError(detail={"password":"password는  2자 이상 특수문자 포함 "})
 
         return data
        
@@ -70,11 +70,11 @@ class UserSerializer(serializers.ModelSerializer):
     
     
 
-# jwt 토큰 커스텀 이메일 추가 (임포트한 토큰시리얼라이저)
+# jwt 토큰 이메일       
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
-        token['email'] = user.email # 이메일로 바꿈/추가
-        token['nickname'] = user.nickname
+        token['email'] = user.email 
+      
         return token
