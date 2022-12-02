@@ -35,7 +35,7 @@ class User(AbstractBaseUser):
     profile_image = models.ImageField(blank=True)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
-    objects = UserManager() 
+    objects = UserManager()
 
     USERNAME_FIELD = 'email'
     # REQUIRED_FIELDS = ['email', 'nickname',]
