@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from workshops.models import Review
+from workshops.models import Review, Workshop
 
 
 # 댓글 보기 GET
@@ -27,3 +27,9 @@ class CommentCreateSerializer(serializers.ModelSerializer):
 
 
 
+
+class WorkshopSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Workshop
+        fields = '__all__'

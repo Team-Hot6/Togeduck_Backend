@@ -36,13 +36,3 @@ class ReviewDetailView(APIView):
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
 
-        else:
-            return Response("권한 없음", status=status.HTTP_403_FORBIDDEN)  
-
-    def delete(self, request, reviews_id):
-        reviews = get_object_or_404(Review,id=reviews_id) 
-        if request.user == reviews.user:
-            reviews.delete()
-            return Response("삭제완룔료룔", status=status.HTTP_204_NO_CONTENT)
-        else:
-            return Response("권한 없다", status=status.HTTP_403_FORBIDDEN)
