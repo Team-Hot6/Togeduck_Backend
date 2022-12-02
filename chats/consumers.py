@@ -11,11 +11,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
         #     'message':'plz suc'
         #     }))
     
-    async def disconnect(self, close_code):
-        await self.channel_layer.group_discard(
-            self.room_group_name,
-            self.channel_name
-        )
+    # async def disconnect(self, close_code):
+    #     await self.channel_layer.group_discard(
+    #         self.room_group_name,
+    #         self.channel_name
+    #     )
+
         
     # get message receive example
     async def receive(self, text_data):
@@ -24,16 +25,19 @@ class ChatConsumer(AsyncWebsocketConsumer):
         print(msg)
 
 
+# get room_id test
 class CreateRoom(AsyncWebsocketConsumer):
     async def connect(self):
+        # get room_id value
         self.room_name = self.scope["url_route"]["kwargs"]["room_id"]
 
         await self.accept()
-    
+
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
-        msg = text_data_json['message']
-
+        msg = text_data_json['room_id']
+        print(msg)
+    
 # class ChatConsumer(AsyncWebsocketConsumer):
 #     async def connect(self):
 #         self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
