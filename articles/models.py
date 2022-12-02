@@ -8,19 +8,21 @@ class Article(models.Model):
     category = models.ForeignKey(Hobby, on_delete=models.CASCADE, related_name='article_category')
     title = models.CharField(max_length=500)
     content = models.TextField()
-    article_image = models.ImageField(upload_to='media/article/', null=True)
+    article_image = models.ImageField(upload_to='media/article/', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return str(self.title)
 
-class Review(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reveiw_user')
-    workshop = models.ForeignKey(Workshop, on_delete=models.CASCADE, related_name='review_workshop')
-    content = models.TextField(max_length=50)
+
+class Comment(models.Model):
+    article = models.ForeignKey(Article, on_delete=models.CASCADE, related_name='comment_article')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comment_user')
+    content = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return str(self.content)
+
