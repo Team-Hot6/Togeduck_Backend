@@ -3,5 +3,5 @@ from articles import views
 
 
 urlpatterns = [
-    # path("", views.abcdefg, name='example'),
+    path('', views.ArticleView.as_view(), name='article_view'),
 ]
