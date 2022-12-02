@@ -36,7 +36,7 @@ class ArticleDetailView(APIView):
     def put(self, request, article_id):
         article = get_object_or_404(Article, id=article_id)
         serializer = ArticleSerializer(article, data=request.data)
-        
+
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
