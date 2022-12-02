@@ -3,7 +3,7 @@ from workshops.models import Review, Workshop
 
 
 # 댓글 보기 GET
-class CommentSerializer(serializers.ModelSerializer):
+class ReviewSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
 
     def get_user(self, obj): 
@@ -19,7 +19,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
 # 댓글 작성 POST
 # 댓글 수정 PUT 
-class CommentCreateSerializer(serializers.ModelSerializer):
+class ReviewCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
         fields = ('content',) 
