@@ -7,9 +7,15 @@ from users.models import User
 class Hobby(models.Model):
     category = models.CharField(max_length=10)
 
+    def __str__(self):
+        return str(self.category)
+
 class Location(models.Model):
     district = models.CharField(max_length=20)
     address = models.CharField(max_length=20)
+
+    def __str__(self):
+        return str(self.district)
 
 class Workshop(models.Model):
     category = models.ForeignKey(Hobby, on_delete=models.CASCADE)
@@ -25,7 +31,8 @@ class Workshop(models.Model):
     participant = models.ManyToManyField(User, related_name='member', symmetrical=False)
     likes = models.ManyToManyField(User, related_name='workshop_likes')
     
-
+    def __str__(self):
+        return str(self.title)
 
 
 
