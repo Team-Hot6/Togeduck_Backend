@@ -7,6 +7,9 @@ from users.models import User
 class Hobby(models.Model):
     category = models.CharField(max_length=10)
 
+    def __str__(self):
+        return self.category 
+
 class Location(models.Model):
     district = models.CharField(max_length=20)
     address = models.CharField(max_length=20)

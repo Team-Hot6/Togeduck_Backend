@@ -4,24 +4,26 @@ from django.contrib.auth.models import (
 )
 
 class UserManager(BaseUserManager):
-    def create_user(self, email, password=None): 
+    def create_user(self, email, nickname ,password=None): 
   
         if not email: 
             raise ValueError('Users must have an email address')
 
         user = self.model(
             email=self.normalize_email(email),
+            nickname = nickname,
         )
 
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, password=None):
+    def create_superuser(self, email, nickname, password=None):
    
         user = self.create_user(
             email,
             password=password,
+            nickname=nickname,
         )
         user.is_admin = True
         user.save(using=self._db)
@@ -31,14 +33,14 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser):
     email = models.EmailField("이메일" ,max_length=255, unique=True) 
     nickname = models.CharField("닉네임", max_length=15, unique=True)
-    hobby = models.ForeignKey('workshops.Hobby', on_delete=models.CASCADE)
+    hobby = models.ManyToManyField('workshops.Hobby')
     profile_image = models.ImageField(blank=True)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
     objects = UserManager() 
 
     USERNAME_FIELD = 'email'
-    # REQUIRED_FIELDS = ['email', 'nickname',]
+    REQUIRED_FIELDS = ['nickname']
 
     def __str__(self):
         return self.email 
