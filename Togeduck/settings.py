@@ -64,7 +64,7 @@ INSTALLED_APPS = [
     "users",
     "chats",
     "articles",
-    "accounts",
+    "wallets",
     "workshops",
 ]
 
