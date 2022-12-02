@@ -22,7 +22,7 @@ class ArticleCreateView(APIView):
         
         serialzier = ArticleSerializer(data=request.data)
         if serialzier.is_valid():
-            serialzier.save()
+            serialzier.save(user=request.user)
             return Response(serialzier.data, status=status.HTTP_201_CREATED)
         return Response(serialzier.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -51,11 +51,19 @@ class ArticleDetailView(APIView):
         return Response({"msg":"게시글을 삭제할 수 있는 권한이 없습니다!"}, status=status.HTTP_403_FORBIDDEN)
 
 
-# 게시글의 댓글
+# 게시글의 댓글(조회//삭제)
 class CommentView(APIView):
     def get(self, request, article_id):
         article = get_object_or_404(Article, id=article_id)
         comments = article.comment_article.all()
         serializer = CommentSerializer(comments, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def post(self, request, article_id):
+        article = get_object_or_404(Article, id=article_id)
+        serializer = CommentSerializer(article, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
