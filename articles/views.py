@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 from articles.models import Article, Comment
-from articles.serializers import ArticleSerializer, ArticleListSerializer, CommentSerializer
+from articles.serializers import ArticleSerializer, ArticleListSerializer, ArticleCreateSerializer, CommentSerializer
 from rest_framework.response import Response
 from rest_framework import status, permissions
 from rest_framework.generics import get_object_or_404
@@ -20,7 +20,7 @@ class ArticleCreateView(APIView):
         if not request.user.is_authenticated:
             return Response({"msg":"로그인이 필요합니다!"}, status=status.HTTP_401_UNAUTHORIZED)
         
-        serialzier = ArticleSerializer(data=request.data)
+        serialzier = ArticleCreateSerializer(data=request.data)
         if serialzier.is_valid():
             serialzier.save(user=request.user)
             return Response(serialzier.data, status=status.HTTP_201_CREATED)

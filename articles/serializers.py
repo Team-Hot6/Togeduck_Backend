@@ -6,6 +6,7 @@ class ArticleSerializer(serializers.ModelSerializer):
         model = Article
         fields = "__all__"
 
+# 게시글 전체 보기
 class ArticleListSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
     category = serializers.StringRelatedField()
@@ -17,10 +18,16 @@ class ArticleListSerializer(serializers.ModelSerializer):
     def get_user(self, obj):
         return obj.user.nickname
 
-
     class Meta:
         model = Article
         fields = "__all__"
+
+# 게시글 작성
+class ArticleCreateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Article
+        exclude = ('user', )
 
 
 class CommentSerializer(serializers.ModelSerializer):
