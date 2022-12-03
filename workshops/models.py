@@ -21,7 +21,7 @@ class Workshop(models.Model):
     host = models.ForeignKey(User, on_delete=models.CASCADE, related_name='workshop_host')
     date = models.DateTimeField()
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
-    address = models.CharField(max_length=20, null=True)
+    address = models.CharField(max_length=20)
     title = models.CharField(max_length=20)
     content = models.TextField(max_length=500)
     workshop_image = models.ImageField(upload_to='workshop/')
@@ -33,17 +33,6 @@ class Workshop(models.Model):
 
     def __str__(self):
         return str(self.title)
-
-
-class Review(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reveiw_user')
-    workshop = models.ForeignKey(Workshop, on_delete=models.CASCADE, related_name='review_workshop')
-    content = models.TextField(max_length=50)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return str(self.content)
 
 
 class Review(models.Model):

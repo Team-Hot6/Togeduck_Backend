@@ -4,17 +4,17 @@ from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from workshops.models import Workshop
-from workshops.serializers import WorkshopSerializer
+from workshops.serializers import WorkshopListSerializer, WorkshopSerializer, WorkshopCreateSerializer
 
 
 class WorkshopView(APIView):
     def get(self, request):
         workshops = Workshop.objects.all()
-        serializer = WorkshopSerializer(workshops, many=True)
+        serializer = WorkshopListSerializer(workshops, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     def post(self, request):
-        serializer = WorkshopSerializer(data=request.data)
+        serializer = WorkshopCreateSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(host=request.user)
             return Response(serializer.data, status=status.HTTP_200_OK)
