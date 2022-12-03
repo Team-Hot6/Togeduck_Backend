@@ -47,3 +47,26 @@ class WorkshopDetailView(APIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
         else:
             return Response("권한이 없습니다.", status=status.HTTP_403_FORBIDDEN)
+
+
+class ApplyView(APIView): # 워크샵 신청
+    def post(self, request, workshop_id):
+        workshop = get_object_or_404(Workshop, id=workshop_id)
+        if request.user in workshop.participant.all():
+            workshop.participant.remove(request.user)
+            return Response("워크샵 신청을 취소했습니다.", status=status.HTTP_200_OK)
+        else: 
+            workshop.participant.add(request.user)
+            return Response("워크샵 신청을 접수했습니다.", status=status.HTTP_200_OK)
+
+
+class LikeView(APIView): # 워크샵 좋아요
+    def post(self, request, workshop_id):
+        workshop = get_object_or_404(Workshop, id=workshop_id)
+
+        if request.user in workshop.likes.all():
+            workshop.likes.remove(request.user)
+            return Response("워크샵 좋아요를 취소했습니다.", status=status.HTTP_200_OK)
+        else: 
+            workshop.likes.add(request.user)
+            return Response("워크샵을 좋아요했습니다.", status=status.HTTP_200_OK)
