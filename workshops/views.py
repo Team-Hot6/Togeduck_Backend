@@ -31,7 +31,7 @@ class WorkshopDetailView(APIView):
     def put(self, request, workshop_id):
         workshop = get_object_or_404(Workshop, id=workshop_id)
         if request.user == workshop.host: 
-            serializer = WorkshopSerializer(Workshop, data=request.data)
+            serializer = WorkshopCreateSerializer(workshop, data=request.data)
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
