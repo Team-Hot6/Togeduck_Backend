@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 from articles.models import Article, Comment
-from articles.serializers import ArticleSerializer, CommentSerializer
+from articles.serializers import ArticleSerializer, ArticleListSerializer, CommentSerializer
 from rest_framework.response import Response
 from rest_framework import status, permissions
 from rest_framework.generics import get_object_or_404
@@ -10,7 +10,7 @@ from rest_framework.generics import get_object_or_404
 class ArticleView(APIView):
     def get(self, request):
         articles = Article.objects.all()
-        serializer = ArticleSerializer(articles, many=True)
+        serializer = ArticleListSerializer(articles, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 

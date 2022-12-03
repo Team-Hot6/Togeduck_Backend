@@ -6,6 +6,22 @@ class ArticleSerializer(serializers.ModelSerializer):
         model = Article
         fields = "__all__"
 
+class ArticleListSerializer(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField()
+    category = serializers.StringRelatedField()
+    comment = serializers.SerializerMethodField()
+
+    def get_comment(self,obj):
+        return obj.comment_article.count()
+
+    def get_user(self, obj):
+        return obj.user.nickname
+
+
+    class Meta:
+        model = Article
+        fields = "__all__"
+
 
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
