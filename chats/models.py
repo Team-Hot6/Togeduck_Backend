@@ -6,8 +6,8 @@ class ChatRoom(models.Model):
     sender = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='Room_sender')
     receiver = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='Room_receiver')
 
-    def __str__(self):
-        return str(self.sender)
+    # def __str__(self):
+    #     return str(self.sender)
 
 class RoomMessage(models.Model):
     room = models.ForeignKey(ChatRoom, on_delete=models.CASCADE)
