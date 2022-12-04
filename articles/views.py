@@ -75,6 +75,7 @@ class CommentView(APIView):
 
 # 게시글의 댓글 삭제
 class CommentDeleteView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     def delete(self, request, article_id, comment_id):
         comment = get_object_or_404(Comment, id=comment_id)
         if comment.user == request.user:
