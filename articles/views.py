@@ -8,6 +8,7 @@ from rest_framework.generics import get_object_or_404
 
 # 게시글 전체 보기
 class ArticleView(APIView):
+    permission_classes = [permissions.AllowAny]
     def get(self, request):
         articles = Article.objects.all()
         serializer = ArticleListSerializer(articles, many=True)
