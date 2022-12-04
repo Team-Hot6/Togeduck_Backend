@@ -4,22 +4,35 @@ from rest_framework.response import Response
 from rest_framework import permissions
 from rest_framework.generics import get_object_or_404
 from users.models import User
-from users.serializers import UserProfileSerializer
+from users.serializers import CustomTokenObtainPairSerializer, UserSerializer, UserProfileSerializer
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView   
+)
 
 
 
-class UserProfileView(APIView): # 마이페이지 화면
+# 회원가입
+class UserView(APIView):
+    def post(self, request):
+        
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+          
+            serializer.save()
+            return Response({"message":"가입완료 ㅇㅅㅇ"}, status=status.HTTP_201_CREATED)
+        else:
+            return Response({"message":f"${serializer.errors}"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+# 로그인 토큰
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer 
+
+
+
+# 마이페이지 화면
+class UserProfileView(APIView):
     def get(self, request, nickname):  
         user = get_object_or_404(User, nickname=nickname)
         serializer = UserProfileSerializer(user)
         return Response(serializer.data)
-
-
-
-
-
-
-
-
-
-        

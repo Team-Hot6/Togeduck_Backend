@@ -1,5 +1,14 @@
-from workshops.models import Workshop
 from rest_framework import serializers
+from workshops.models import Hobby, Location, Workshop
+
+
+
+
+class WorkshopSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Workshop
+        fields = '__all__'
 
 
 # 마이페이지
@@ -29,5 +38,7 @@ class WorkshopDetailImageSerializer(serializers.ModelSerializer):  # 워크샵 �
     class Meta: 
         model = Workshop
         fields = ("workshop_image")
+
+
 
 
