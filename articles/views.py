@@ -30,6 +30,7 @@ class ArticleCreateView(APIView):
 
 # 게시글 상세페이지(조회/수정/삭제)
 class ArticleDetailView(APIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     def get(self, request, article_id):
         article = get_object_or_404(Article, id=article_id)
         serializer = ArticleDetailSerializer(article)
@@ -56,6 +57,7 @@ class ArticleDetailView(APIView):
 
 # 게시글의 댓글(조회/작성)
 class CommentView(APIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     def get(self, request, article_id):
         article = get_object_or_404(Article, id=article_id)
         comments = article.comment_article.all()
