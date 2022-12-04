@@ -38,14 +38,19 @@ class ArticleDetailSerializer(serializers.ModelSerializer):
         model = Article
         fields = "__all__"
 
-# 게시글 작성
+# 게시글 작성/수정
 class ArticleCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Article
         exclude = ('user', )
 
+# 댓글 전체 보기
+class CommentListSerializer(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField()
 
-class CommentSerializer(serializers.ModelSerializer):
+    def get_user(self,obj):
+        return obj.user.nickname
+
     class Meta:
         model = Comment
-        fields = ('content',)
+        fields = ('content', 'created_at', 'user')
