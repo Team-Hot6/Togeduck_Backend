@@ -16,6 +16,7 @@ class ArticleView(APIView):
 
 # 게시글 작성페이지
 class ArticleCreateView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     def post(self, request):
         if not request.user.is_authenticated:
             return Response({"msg":"로그인이 필요합니다!"}, status=status.HTTP_401_UNAUTHORIZED)
