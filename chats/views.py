@@ -44,3 +44,16 @@ class ChatListView(APIView):
         
         # 존재하는 채팅방 id 반환
         return Response(get_exist_room[0].id, status=status.HTTP_200_OK)
+
+# 개별 채팅방 관리
+class ChatRoomView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    # 채팅방이 있는지 확인하고 없으면 없다고 리턴
+    # 채팅방이 존재하면 존재하는 채팅방 데이터 리턴
+    # 채팅방 접속 하자마자 채팅 읽음 상태 만드는 로직 작성 예정
+    def get(self, request):
+        return Response('', status=status.HTTP_200_OK)
+    
+    def post(self, request, room_id):
+        return Response('', status=status.HTTP_200_OK)
