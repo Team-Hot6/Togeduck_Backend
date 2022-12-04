@@ -10,10 +10,26 @@ class ArticleSerializer(serializers.ModelSerializer):
 class ArticleListSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
     category = serializers.StringRelatedField()
-    comment = serializers.SerializerMethodField()
+    comment_article = serializers.SerializerMethodField()
 
-    def get_comment(self,obj):
+    def get_comment_article(self,obj):
         return obj.comment_article.count()
+
+    def get_user(self, obj):
+        return obj.user.nickname
+
+    class Meta:
+        model = Article
+        fields = "__all__"
+
+# 게시글 상세
+class ArticleDetailSerializer(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField()
+    category = serializers.StringRelatedField()
+    comment_article = serializers.StringRelatedField(many=True, read_only=True)
+
+    def get_comment_article(self, obj):
+        return obj.comment_article.content
 
     def get_user(self, obj):
         return obj.user.nickname
@@ -24,7 +40,6 @@ class ArticleListSerializer(serializers.ModelSerializer):
 
 # 게시글 작성
 class ArticleCreateSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Article
         exclude = ('user', )
@@ -33,4 +48,4 @@ class ArticleCreateSerializer(serializers.ModelSerializer):
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
-        fields = "__all__"
+        fields = ('content',)
