@@ -49,7 +49,7 @@ class CommentListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ('content', 'created_at', 'user')
+        exclude = ('updated_at','article',)
 
 # 댓글 작성
 class CommentCreateSerializer(serializers.ModelSerializer):
