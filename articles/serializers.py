@@ -26,10 +26,6 @@ class ArticleListSerializer(serializers.ModelSerializer):
 class ArticleDetailSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
     category = serializers.StringRelatedField()
-    comment_article = serializers.StringRelatedField(many=True, read_only=True)
-
-    def get_comment_article(self, obj):
-        return obj.comment_article.content
 
     def get_user(self, obj):
         return obj.user.nickname
@@ -54,3 +50,9 @@ class CommentListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ('content', 'created_at', 'user')
+
+# 댓글 작성
+class CommentCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ('content',)

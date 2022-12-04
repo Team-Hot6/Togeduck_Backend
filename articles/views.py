@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 from articles.models import Article, Comment
-from articles.serializers import ArticleSerializer, ArticleListSerializer, ArticleCreateSerializer, ArticleDetailSerializer, CommentListSerializer
+from articles.serializers import ArticleSerializer, ArticleListSerializer, ArticleCreateSerializer, ArticleDetailSerializer, CommentListSerializer, CommentCreateSerializer
 from rest_framework.response import Response
 from rest_framework import status, permissions
 from rest_framework.generics import get_object_or_404
@@ -62,7 +62,7 @@ class CommentView(APIView):
     
     def post(self, request, article_id):
         article = get_object_or_404(Article, id=article_id)
-        serializer = CommentSerializer(article, data=request.data)
+        serializer = CommentCreateSerializer(article, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
