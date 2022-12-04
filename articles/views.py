@@ -14,17 +14,23 @@ class ArticleView(APIView):
         get_category_value = self.request.GET.get('category')
         # http://www.naver.com/user/?category=축구/
         # 축구 야구 농구 
-        try:
-            get_hobby = Hobby.objects.get(category=get_category_value)
-        except:
-            return Response('해당 카테고리가 없습니다.', status=status.HTTP_404_NOT_FOUND)
-        
-        articles = Article.objects.filter(category=get_hobby.id)
+        if get_category_value:
+            try:
+                get_hobby = Hobby.objects.get(category=get_category_value)
+            except:
+                return Response('해당 카테고리가 없습니다.', status=status.HTTP_404_NOT_FOUND)
 
-        # articles = Article.objects.all()
-        
+            articles = Article.objects.filter(category=get_hobby.id)
+            serializer = ArticleListSerializer(articles, many=True)
+            
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        articles = Article.objects.all()
         serializer = ArticleListSerializer(articles, many=True)
+        
         return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        
 
 
 # 게시글 작성페이지

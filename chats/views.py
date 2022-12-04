@@ -6,6 +6,7 @@ from django.db.models import Q
 from .serializers import ChatRoomSerializer, RoomMessageSerializer
 from rest_framework.permissions import IsAuthenticated
 from users.models import User
+from users.serializers import UserListSerializer
 # Create your views here.
 
 class ChatListView(APIView):
@@ -26,9 +27,9 @@ class ChatListView(APIView):
         return Response(slz.data, status=status.HTTP_200_OK)
     
     # 채팅방 생성하기
-    def post(self, request, user_id):
+    def post(self, request):
         sender_id = request.user.id
-        receiver_id = user_id
+        receiver_id = request.data['user_id']
 
         sender = request.user
         receiver = User.objects.get(id=receiver_id)
@@ -52,8 +53,27 @@ class ChatRoomView(APIView):
     # 채팅방이 있는지 확인하고 없으면 없다고 리턴
     # 채팅방이 존재하면 존재하는 채팅방 데이터 리턴
     # 채팅방 접속 하자마자 채팅 읽음 상태 만드는 로직 작성 예정
-    def get(self, request):
-        return Response('', status=status.HTTP_200_OK)
+    def get(self, request, room_id):
+        try:
+            check_chat_room = ChatRoom.objects.get(id=room_id)
+        except:
+            return Response({"msg":"채팅방이 존재하지 않습니다."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # 채팅방 접속하면 해당 채팅방 읽음 처리
+        check_chat_room.is_read = True
+        check_chat_room.save()
+        slz = RoomMessageSerializer(check_chat_room)
+
+        return Response(slz.data, status=status.HTTP_200_OK)
+    
+    # 실시간으로 읽은 처리 하는 로직 구현 필요
     
     def post(self, request, room_id):
         return Response('', status=status.HTTP_200_OK)
+
+class UserListView(APIView):
+    def get(self, request):
+        user_list = User.objects.all()
+        slz = UserListSerializer(user_list, many=True)
+
+        return Response(slz.data, status=status.HTTP_200_OK)

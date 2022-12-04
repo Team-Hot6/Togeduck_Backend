@@ -31,9 +31,17 @@ class ArticleListSerializer(serializers.ModelSerializer):
 class ArticleDetailSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
     category = serializers.StringRelatedField()
+    comment_user = serializers.SerializerMethodField()
+    comment_content = serializers.SerializerMethodField()
 
     def get_user(self, obj):
         return obj.user.nickname
+    
+    def get_comment_user(self, obj):
+        return obj.comment_article.user
+    
+    def get_comment_content(self, obj):
+        return obj.comment_article.content
 
     class Meta:
         model = Article

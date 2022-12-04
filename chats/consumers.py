@@ -1,5 +1,5 @@
 import json
-from channels.generic.websocket import WebsocketConsumer, AsyncWebsocketConsumer
+from channels.generic.websocket import AsyncWebsocketConsumer
 from .models import ChatRoom, RoomMessage
 from users.models import User
 from channels.db import database_sync_to_async
@@ -40,7 +40,14 @@ class CreateRoom(AsyncWebsocketConsumer):
         text_data_json = json.loads(text_data)
         room_id = text_data_json['room_id']
         message = text_data_json['message']
+        # 프론트에서 sender_id, receiver_id 보내주는 로직 필요
+        # sender_id = text_data_json['sender_id']
+        # receiver_id = text_data_json['receiver_id']
         
+        # sender = await self.get_user_db(sender_id)
+        # receiver = await self.get_user_db(receiver_id)
+        # room_object = await self.get_chatroom(room_id)
+
         response_json = {
             'message':message
             }
@@ -56,7 +63,6 @@ class CreateRoom(AsyncWebsocketConsumer):
     # Receive message from room group
     async def chat_message(self, event):
         message = event["message"]
-        print(message)
 
         # Send message to WebSocket
         await self.send(text_data=json.dumps({"message": message}))
