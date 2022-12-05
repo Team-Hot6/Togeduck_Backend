@@ -3,6 +3,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from .models import ChatRoom, RoomMessage
 from users.models import User
 from channels.db import database_sync_to_async
+from datetime import datetime
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -29,7 +30,6 @@ class CreateRoom(AsyncWebsocketConsumer):
         )
 
         await self.accept()
-
         
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(
@@ -42,15 +42,33 @@ class CreateRoom(AsyncWebsocketConsumer):
         room_id = text_data_json['room_id']
         message = text_data_json['message']
         # 프론트에서 sender_id, receiver_id 보내주는 로직 필요
-        # sender_id = text_data_json['sender_id']
-        # receiver_id = text_data_json['receiver_id']
+        sender_id = text_data_json['sender_id']
+        receiver_id = text_data_json['receiver_id']
         
-        # sender = await self.get_user_db(sender_id)
-        # receiver = await self.get_user_db(receiver_id)
-        # room_object = await self.get_chatroom_db(room_id)
+        sender = await self.get_user_db(sender_id)
+        receiver = await self.get_user_db(receiver_id)
+        room_object = await self.get_chatroom_db(room_id)
+
+        if not sender:
+            print('Sender user가 조회되지 않습니다.')
+        if not receiver:
+            print('Receiver user가 조회되지 않습니다.')
+        
+        await self.create_chat_log(room_object, sender, message)
+
+        cur_datetime = datetime.now()
+        ampm = cur_datetime.strftime('%p')
+
+        cur_time = datetime.now().strftime('%I:%M')            
+        date = datetime.now().strftime('%Y년 %m월 %d일')
+        now_time = f"AM {now_time}" if ampm == 'AM' else f"PM {now_time}"
 
         response_json = {
-            'message':message
+            'message': message,
+            'sender': sender.id,
+            'room_id': room_id,
+            'cur_time': cur_time,
+            'date': date
             }
 
         await self.channel_layer.group_send(
