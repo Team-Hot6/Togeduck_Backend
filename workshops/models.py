@@ -8,6 +8,7 @@ class Hobby(models.Model):
     def __str__(self):
         return str(self.category)
 
+
 class Location(models.Model):
     district = models.CharField(max_length=20)
 
@@ -20,7 +21,7 @@ class Workshop(models.Model):
     host = models.ForeignKey(User, on_delete=models.CASCADE, related_name='workshop_host')
     date = models.DateTimeField()
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
-    address = models.CharField(max_length=20, null=True)
+    address = models.CharField(max_length=20)
     title = models.CharField(max_length=20)
     content = models.TextField(max_length=500)
     workshop_image = models.ImageField(upload_to='workshop/')

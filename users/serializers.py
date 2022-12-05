@@ -57,7 +57,7 @@ class UserSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(detail={"nickname":"nickname은 2자 이상임 "})
                           
 
-        elif len(data["password"]) < 2 and password:
+        elif len(data["password"]) < 2 or password:
             raise serializers.ValidationError(detail={"password":"password는  2자 이상 특수문자 포함 "})
 
         return data
