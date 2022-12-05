@@ -4,15 +4,33 @@ from articles.serializers import ArticleSerializer, ArticleListSerializer, Artic
 from rest_framework.response import Response
 from rest_framework import status, permissions
 from rest_framework.generics import get_object_or_404
+from workshops.models import Hobby
 
 
 # 게시글 전체 보기
 class ArticleView(APIView):
     permission_classes = [permissions.AllowAny]
     def get(self, request):
+        get_category_value = self.request.GET.get('category')
+        # http://www.naver.com/user/?category=축구/
+        # 축구 야구 농구 
+        if get_category_value:
+            try:
+                get_hobby = Hobby.objects.get(category=get_category_value)
+            except:
+                return Response('해당 카테고리가 없습니다.', status=status.HTTP_404_NOT_FOUND)
+
+            articles = Article.objects.filter(category=get_hobby.id)
+            serializer = ArticleListSerializer(articles, many=True)
+            
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
         articles = Article.objects.all()
         serializer = ArticleListSerializer(articles, many=True)
+        
         return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        
 
 
 # 게시글 작성페이지

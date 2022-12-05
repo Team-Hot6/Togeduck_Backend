@@ -1,5 +1,5 @@
 import json
-from channels.generic.websocket import WebsocketConsumer, AsyncWebsocketConsumer
+from channels.generic.websocket import AsyncWebsocketConsumer
 from .models import ChatRoom, RoomMessage
 from users.models import User
 from channels.db import database_sync_to_async
@@ -17,6 +17,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
 # get room_id test
 class CreateRoom(AsyncWebsocketConsumer):
+    # django channels authentication 로그인 관련한 인증 기능 추가해야 함
     async def connect(self):
         # get room_id value
         self.room_name = self.scope["url_route"]["kwargs"]["room_id"]
@@ -38,29 +39,50 @@ class CreateRoom(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
-        msg = text_data_json['room_id']
-        print(msg)
+        room_id = text_data_json['room_id']
+        message = text_data_json['message']
+        # 프론트에서 sender_id, receiver_id 보내주는 로직 필요
+        # sender_id = text_data_json['sender_id']
+        # receiver_id = text_data_json['receiver_id']
+        
+        # sender = await self.get_user_db(sender_id)
+        # receiver = await self.get_user_db(receiver_id)
+        # room_object = await self.get_chatroom_db(room_id)
+
+        response_json = {
+            'message':message
+            }
 
         await self.channel_layer.group_send(
-            self.room_group_name, {"type": "chat_message", "message": msg}
+            self.room_group_name,
+            {
+                'type': 'chat_message',
+                'message': json.dumps(response_json)
+            }
         )
+        
+    # Receive message from room group
+    async def chat_message(self, event):
+        message = event["message"]
+
+        # Send message to WebSocket
+        await self.send(text_data=json.dumps({"message": message}))
 
     @database_sync_to_async
     def get_user_db(self, user_id):
-        user = User.objects.get()
+        user = User.objects.filter(id=user_id)
+        if user:
+            return user[0]
+        return None
     
+    @database_sync_to_async
+    def get_chatroom_db(self, room_id):
+        room = ChatRoom.objects.filter(id=room_id)
+        if room:
+            return room[0]
+        return None
+    
+    @database_sync_to_async
+    def create_chat_log(self, room_id, sender, content):
+        RoomMessage.objects.create(room=room_id, user=sender, content=content)
 
-
-#     # Receive message from WebSocket
-#     async def receive(self, text_data):
-#         text_data_json = json.loads(text_data)
-#         message = text_data_json["message"]
-
-#         # Send message to room group
-
-#     # Receive message from room group
-#     async def chat_message(self, event):
-#         message = event["message"]
-
-#         # Send message to WebSocket
-#         await self.send(text_data=json.dumps({"message": message}))
