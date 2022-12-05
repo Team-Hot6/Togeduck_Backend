@@ -29,13 +29,11 @@ class Workshop(models.Model):
     amount = models.DecimalField(decimal_places=0, max_digits=10000000000000000)
     created_at = models.DateTimeField(auto_now_add=True)
     participant = models.ManyToManyField(User, related_name='member', symmetrical=False, blank=True)
-    likes = models.ManyToManyField(User, related_name='workshop_likes', blank=True)
-    # apply_status = models.CharField(max_length=10)  # 마이페이지 - 신청 현황
-    # review = models.TextField(max_length=500)  # 워크샵 샹세페이지 - 후기
-
-
+    likes = models.ManyToManyField(User, related_name='workshop_likes')
+    
     def __str__(self):
-        return str(self.title)
+        return self.title 
+
 
 
 class Review(models.Model):
@@ -47,3 +45,7 @@ class Review(models.Model):
 
     def __str__(self):
         return str(self.content)
+
+
+
+

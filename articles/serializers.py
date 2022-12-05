@@ -2,6 +2,11 @@ from rest_framework import serializers
 from articles.models import Article, Comment
 
 class ArticleSerializer(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField()
+
+    def get_user(self, obj):
+        return obj.user.email
+
     class Meta:
         model = Article
         fields = "__all__"
@@ -26,9 +31,17 @@ class ArticleListSerializer(serializers.ModelSerializer):
 class ArticleDetailSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
     category = serializers.StringRelatedField()
+    comment_user = serializers.SerializerMethodField()
+    comment_content = serializers.SerializerMethodField()
 
     def get_user(self, obj):
         return obj.user.nickname
+    
+    def get_comment_user(self, obj):
+        return obj.comment_article.user
+    
+    def get_comment_content(self, obj):
+        return obj.comment_article.content
 
     class Meta:
         model = Article
