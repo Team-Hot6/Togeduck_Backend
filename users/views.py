@@ -41,8 +41,8 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 
 class SelectedHobbyView(APIView):  # 마이페이지 - 내가 선택한 취미
     def get(self, request, user_id):  
-        nickname = get_object_or_404(User, id=user_id)
-        serializer = SelectedHobbySerializer(nickname)
+        user = get_object_or_404(User, id=user_id)
+        serializer = SelectedHobbySerializer(user)
         return Response(serializer.data)
 
 class AppliedWorkshopView(APIView):  # 마이페이지 - 신청 워크샵
@@ -55,7 +55,7 @@ class CreatedWorkshopView(APIView):  # 마이페이지 - 생성 워크샵
     def get(self, request, user_id):  
         created_workshop = get_object_or_404(User, id=user_id)
         serializer = CreatedWorkshopSerializer(created_workshop)
-        return Response(serializer.data)      
+        return Response(serializer.data)
 
 
 

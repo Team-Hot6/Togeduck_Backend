@@ -112,5 +112,5 @@ class CreatedWorkshopSerializer(serializers.ModelSerializer): # 마이페이지 
     workshop_host = WorkshopListSerializer(many=True)
     class Meta:
         model = User
-        fields = ('member',)  # (이후 변경 예정)
+        fields = ('workshop_host',)  # (이후 변경 예정)
 
