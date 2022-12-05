@@ -31,13 +31,13 @@ class WorkshopDetailSerializer(serializers.ModelSerializer): # 워크샵 상세 
 class WorkshopDetailLikesSerializer(serializers.ModelSerializer):  # 워크샵 상세 페이지 - 좋아요 수정 
     class Meta: 
         model = Workshop
-        fields = ("likes")
+        fields = ("likes",)
 
 
 class WorkshopDetailImageSerializer(serializers.ModelSerializer):  # 워크샵 상세 페이지 - 이미지 수정 
     class Meta: 
         model = Workshop
-        fields = ("workshop_image")
+        fields = ("workshop_image",)
 
 
 

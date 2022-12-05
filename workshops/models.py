@@ -29,8 +29,8 @@ class Workshop(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     participant = models.ManyToManyField(User, related_name='member', symmetrical=False, blank=True)
     likes = models.ManyToManyField(User, related_name='workshop_likes', blank=True)
-    apply_status = models.CharField(max_length=10)  # 마이페이지 - 신청 현황
-    review = models.TextField(max_length=500)  # 워크샵 샹세페이지 - 후기
+    # apply_status = models.CharField(max_length=10)  # 마이페이지 - 신청 현황
+    # review = models.TextField(max_length=500)  # 워크샵 샹세페이지 - 후기
 
 
     def __str__(self):
