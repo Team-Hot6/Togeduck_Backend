@@ -54,6 +54,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def get_token(cls, user):
         token = super().get_token(user)
         token['email'] = user.email 
+        print(token['email'])
         return token
 
 # user list view serializer
