@@ -1,20 +1,7 @@
-from workshops.serializers import WorkshopMypageSerializer
 from articles.models import Article
 from users.models import User
 from rest_framework import serializers
 import re
-
-
-class UserProfileSerializer(serializers.ModelSerializer):
-    workshop_category = WorkshopMypageSerializer
-    class Meta:
-        model = User
-        fields = ("nickname","email","hobby","profile_image","workshop_category")
-        
-    
-
-from rest_framework import serializers
-from users.models import User 
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer 
 
 
