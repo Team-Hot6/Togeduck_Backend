@@ -33,7 +33,7 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser):
     email = models.EmailField("이메일" ,max_length=255, unique=True) 
     nickname = models.CharField("닉네임", max_length=15, unique=True)
-    hobby = models.ManyToManyField('workshops.Hobby', null=True, blank=True)
+    hobby = models.ManyToManyField('workshops.Hobby')
     profile_image = models.ImageField(blank=True)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)

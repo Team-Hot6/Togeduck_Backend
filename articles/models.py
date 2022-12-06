@@ -2,7 +2,7 @@ from django.db import models
 from users.models import User
 from workshops.models import Hobby, Workshop
 
-# Create your models here.
+
 class Article(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='article_user')
     category = models.ForeignKey(Hobby, on_delete=models.CASCADE, related_name='article_category')
@@ -25,4 +25,3 @@ class Comment(models.Model):
 
     def __str__(self):
         return str(self.content)
-

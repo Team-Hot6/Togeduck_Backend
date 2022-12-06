@@ -23,7 +23,10 @@ class ArticleView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         articles = Article.objects.all()
         serializer = ArticleListSerializer(articles, many=True)
+        
         return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        
 
 
 # 게시글 작성페이지

@@ -14,6 +14,7 @@ class RoomMessage(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     content = models.TextField(max_length=1000, null=True)
     is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return str(self.room)
