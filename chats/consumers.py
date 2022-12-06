@@ -104,6 +104,9 @@ class CreateRoom(AsyncWebsocketConsumer):
             print('Sender user가 조회되지 않습니다.')
         if not receiver:
             print('Receiver user가 조회되지 않습니다.')
+        if not message:
+            print('message가 없습니다.')
+            return
         
         await self.create_chat_log(room_object, sender, message)
 
@@ -165,4 +168,3 @@ class CreateRoom(AsyncWebsocketConsumer):
     @database_sync_to_async
     def create_chat_log(self, room_object, sender, content):
         RoomMessage.objects.create(room=room_object, user=sender, content=content)
-        print('testtest')
