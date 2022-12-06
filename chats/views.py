@@ -7,6 +7,7 @@ from .serializers import ChatRoomSerializer, RoomMessageSerializer
 from rest_framework.permissions import IsAuthenticated
 from users.models import User
 from users.serializers import UserListSerializer
+from itertools import chain
 # Create your views here.
 
 class ChatListView(APIView):
@@ -87,8 +88,31 @@ class UserListView(APIView):
             user_chat_rooms = ChatRoom.objects.filter(
                 Q(sender=cur_user_id) | Q(receiver=cur_user_id))
             
-            print(user_chat_rooms)
+            # sender로 있는 채팅 상대방 객체
             
-            return Response('', status=status.HTTP_200_OK)
+            opponent_receiver = ChatRoom.objects.filter(sender=cur_user_id)
+            opponent_sender = ChatRoom.objects.filter(receiver=cur_user_id)
+
+            test = ChatRoom.objects.get(receiver=cur_user_id)
+            test1 = ChatRoom.objects.filter(receiver=cur_user_id)
+
+            test_user = User.objects.get(id=cur_user_id)
+
+            # 되는거 related name 사용
+            # ex ) (객체).(related_name).all()
+            test2 = test_user.Room_sender.all()
+
+            # 되는거 related name 없이 _set 사용
+            # ex) (객체).(모델_set).all() # 대소문자 구분 없음
+            test2 = test_user.chatroom_set.all()
+
+            temp_opp_receiver = [User.objects.get(email=x.receiver) for x in opponent_receiver]
+            temp_opp_sender = [User.objects.get(email=x.sender) for x in opponent_sender]
+
+            result_opp_user = list(chain(temp_opp_receiver, temp_opp_sender))
+
+            slz = UserListSerializer(result_opp_user, many=True)
+            
+            return Response(slz.data, status=status.HTTP_200_OK)
         
         return Response({"msg" : "잘못된 요청입니다."}, status=status.HTTP_400_BAD_REQUEST)
