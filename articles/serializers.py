@@ -40,7 +40,7 @@ class CommentListSerializer(serializers.ModelSerializer):
 class ArticleDetailSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
     category = serializers.StringRelatedField()
-    comment_article = CommentListSerializer(many=True)
+    # comment_article = CommentListSerializer(many=True)
 
     def get_user(self, obj):
         return obj.user.nickname
