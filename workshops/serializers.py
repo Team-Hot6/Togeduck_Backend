@@ -1,31 +1,5 @@
 from rest_framework import serializers
-from workshops.models import Review, Workshop
-
-
-# 댓글 보기 GET
-class ReviewSerializer(serializers.ModelSerializer):
-    user = serializers.SerializerMethodField()
-
-    def get_user(self, obj): 
-        return obj.user.email 
-
-    class Meta:
-        model = Review 
-        fields = '__all__' 
-       
-
-
-
-
-# 댓글 작성 POST
-# 댓글 수정 PUT 
-class ReviewCreateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Review
-        fields = ('content',) 
-
-
-
+from workshops.models import Review, Workshop,Hobby,Location
 
 
 class HobbySerializer(serializers.ModelSerializer):
@@ -40,6 +14,51 @@ class LocationSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+
+# 리뷰 보기GET
+class ReviewSerializer(serializers.ModelSerializer): 
+    user = serializers.SerializerMethodField()
+
+    def get_user(self, obj):
+        return obj.user.nickname
+
+    class Meta:
+        model = Review
+        fields = ('id', 'content', 'user', 'created_at', 'updated_at',)
+
+
+# 리뷰 수정 PUT , 작성 POST
+class ReviewCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Review
+        fields = ('content',) 
+
+
+
+
+# 워크샵 전체 목록 조회
+class WorkshopListSerializer(serializers.ModelSerializer): 
+    category = serializers.SerializerMethodField()
+    location = serializers.SerializerMethodField()
+
+    def get_category(self, obj):
+        return obj.category.category
+
+    def get_location(self, obj):
+        return obj.location.district
+
+    class Meta:
+        model = Workshop
+        fields = ('title', 'content', 'workshop_image', 'category', 'location',)
+
+
+
+
+
+
+
+
+# 워크샵 상세 조회
 class WorkshopSerializer(serializers.ModelSerializer):
     host = serializers.SerializerMethodField()
     likes_count = serializers.SerializerMethodField()
@@ -66,3 +85,11 @@ class WorkshopSerializer(serializers.ModelSerializer):
         model = Workshop
         fields = ('date', 'address', 'title', 'content', 'workshop_image', 'max_client', 'amount', 'category', 'location', 'host', 'likes_count', 'participant_count',)
         read_only_fields = ('host',)
+
+
+
+# 워크샵 생성, 수정
+class WorkshopCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Workshop
+        fields = ('date', 'address', 'title', 'content', 'workshop_image', 'max_client', 'amount', 'category', 'location', )

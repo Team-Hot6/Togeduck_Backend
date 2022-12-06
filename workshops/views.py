@@ -2,8 +2,8 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
-from workshops.models import Workshop,Review
-from workshops.serializers import ReviewSerializer,ReviewCreateSerializer,WorkshopSerializer
+from workshops.models import Workshop,Review,Hobby
+from workshops.serializers import ReviewSerializer,ReviewCreateSerializer,WorkshopSerializer,WorkshopCreateSerializer,WorkshopListSerializer,HobbySerializer
 from rest_framework import permissions
 
 
@@ -13,16 +13,28 @@ from rest_framework import permissions
 class WorkshopView(APIView):
     def get(self, request):
         workshops = Workshop.objects.all()
-        serializer = WorkshopSerializer(workshops, many=True)
+        serializer = WorkshopListSerializer(workshops, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     def post(self, request):
-        serializer = WorkshopSerializer(data=request.data)
+        serializer = WorkshopCreateSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(host=request.user)
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# 취미 카테고리
+class HobbyView(APIView):
+    def get(self, request):
+        workshops = Hobby.objects.all()
+        serializer = HobbySerializer(workshops, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    
+
+
 
 
 class WorkshopDetailView(APIView):
@@ -34,7 +46,7 @@ class WorkshopDetailView(APIView):
     def put(self, request, workshop_id):
         workshop = get_object_or_404(Workshop, id=workshop_id)
         if request.user == workshop.host: 
-            serializer = WorkshopSerializer(Workshop, data=request.data)
+            serializer = WorkshopCreateSerializer(workshop, data=request.data)
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
@@ -47,7 +59,7 @@ class WorkshopDetailView(APIView):
         workshop = get_object_or_404(Workshop, id=workshop_id)
         if request.user == workshop.host: 
             workshop.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response('워크샵 삭제',status=status.HTTP_204_NO_CONTENT)
         else:
             return Response("권한이 없습니다.", status=status.HTTP_403_FORBIDDEN)
 
@@ -86,6 +98,6 @@ class ReviewDetailView(APIView):
         reviews = get_object_or_404(Review,id=reviews_id) 
         if request.user == reviews.user:
             reviews.delete()
-            return Response("삭제완룔료룔", status=status.HTTP_204_NO_CONTENT)
+            return Response("삭제합니다", status=status.HTTP_204_NO_CONTENT)
         else:
-            return Response("권한 없다고", status=status.HTTP_403_FORBIDDEN)
+            return Response("권한 없다", status=status.HTTP_403_FORBIDDEN)
