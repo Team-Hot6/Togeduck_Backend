@@ -73,7 +73,22 @@ class ChatRoomView(APIView):
 
 class UserListView(APIView):
     def get(self, request):
-        user_list = User.objects.all()
-        slz = UserListSerializer(user_list, many=True)
+        connect_user = self.request.GET.get('connect')
+        # connect 가 파라미터에 없을때 전체를 반환해줌
+        if not connect_user:
+            user_list = User.objects.all()
+            slz = UserListSerializer(user_list, many=True)
 
-        return Response(slz.data, status=status.HTTP_200_OK)
+            return Response(slz.data, status=status.HTTP_200_OK)
+        
+        # 로그인된 유저의 채팅 목록을 반환해줌
+        if connect_user == 'list':
+            cur_user_id = request.user.id
+            user_chat_rooms = ChatRoom.objects.filter(
+                Q(sender=cur_user_id) | Q(receiver=cur_user_id))
+            
+            print(user_chat_rooms)
+            
+            return Response('', status=status.HTTP_200_OK)
+        
+        return Response({"msg" : "잘못된 요청입니다."}, status=status.HTTP_400_BAD_REQUEST)
