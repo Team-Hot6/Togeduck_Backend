@@ -42,7 +42,7 @@ class WorkshopApply(models.Model):
     ('대기', '대기'))
     workshop = models.ForeignKey(Workshop, on_delete=models.CASCADE)
     guest = models.ForeignKey(User, on_delete=models.CASCADE) 
-    result = models.CharField("신청 유형", choices=CHOISE_TYPE, null=True, max_length=3) 
+    result = models.CharField("신청 유형", choices=CHOISE_TYPE, null=True, max_length=3)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
