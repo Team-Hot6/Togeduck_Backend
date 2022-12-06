@@ -47,6 +47,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",
     # channels 충돌을 피하기 위해 맨 위
     "channels",
     

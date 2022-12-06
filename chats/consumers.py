@@ -165,4 +165,4 @@ class CreateRoom(AsyncWebsocketConsumer):
     @database_sync_to_async
     def create_chat_log(self, room_object, sender, content):
         RoomMessage.objects.create(room=room_object, user=sender, content=content)
-
+        print('testtest')
