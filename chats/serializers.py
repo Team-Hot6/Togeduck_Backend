@@ -7,13 +7,13 @@ class ChatRoomSerializer(serializers.ModelSerializer):
     # user = serializers.SerializerMethodField()
 
     # def get_user(self, obj):
-    #     return obj.user.username
+    #     return obj.user.nickname
 
     class Meta:
         model = ChatRoom
-        feilds = '__all__'
+        fields = '__all__'
 
 class RoomMessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = RoomMessage
-        feilds = '__all__'
+        fields = '__all__'
