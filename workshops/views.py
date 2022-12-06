@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from workshops.models import Workshop
+from workshops.models import Workshop, WorkshopApply
 from workshops.serializers import WorkshopListSerializer, WorkshopSerializer, WorkshopCreateSerializer
 
 
@@ -50,14 +50,26 @@ class WorkshopDetailView(APIView):
 
 
 class ApplyView(APIView): # 워크샵 신청
-    def post(self, request, workshop_id):
+    def post(self, request, workshop_id): # 워크샵 신청
+        # 신청자와 호스트가 동일하다면 신청할 수 없도록 검증 필요
         workshop = get_object_or_404(Workshop, id=workshop_id)
+
         if request.user in workshop.participant.all():
             workshop.participant.remove(request.user)
             return Response("워크샵 신청을 취소했습니다.", status=status.HTTP_200_OK)
         else: 
-            workshop.participant.add(request.user)
+            WorkshopApply.objects.create(guest=request.user, workshop=workshop, result='대기')       
             return Response("워크샵 신청을 접수했습니다.", status=status.HTTP_200_OK)
+
+    def put(self, request, workshop_id): # 워크샵 신청 결과 처리
+        # 내가 이 워크샵의 호스트가 맞는지 검증 필요
+        workshop = get_object_or_404(Workshop, id=workshop_id)
+        guest = request.data['guest'] # 특정 신청자
+        result = request.data['result'] # 신청결과
+        workshop_apply = WorkshopApply.objects.get(guest=guest, workshop=workshop)
+        workshop_apply.result = f'{result}'
+        workshop_apply.save()
+        return Response(f"워크샵 신청을 {result}했습니다.", status=status.HTTP_200_OK)
 
 
 class LikeView(APIView): # 워크샵 좋아요

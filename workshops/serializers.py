@@ -65,10 +65,10 @@ class WorkshopSerializer(serializers.ModelSerializer): # 특정 워크샵 상세
 
     class Meta:
         model = Workshop
-        fields = ('title', 'content', 'workshop_image', 'category', 'location', 'address', 'host', 'amount', 'date', 'created_at', 'max_client', 'participant_count', 'likes_count', 'review_workshop',)
+        fields = ('pk', 'title', 'content', 'workshop_image', 'category', 'location', 'address', 'host', 'host_id', 'amount', 'date', 'created_at', 'max_guest', 'participant_count', 'likes_count', 'review_workshop',)
 
 
-class WorkshopCreateSerializer(serializers.ModelSerializer): # 워크샵 생성
+class WorkshopCreateSerializer(serializers.ModelSerializer): # 워크샵 생성, 수정
     class Meta:
         model = Workshop
-        fields = ('title', 'content', 'workshop_image', 'category', 'location', 'address', 'amount', 'date', 'max_client',)
+        fields = ('title', 'content', 'workshop_image', 'category', 'location', 'address', 'amount', 'date', 'max_guest',)
