@@ -107,30 +107,18 @@ class UserListView(APIView):
             set_opponent_receiver = User.objects.filter(id=cur_user_id)
             temp_set_opp_receiver = [x.chatroom_receiver.all() for x in set_opponent_receiver]
 
-            # print(set_opponent_receiver)
-            # print(temp_set_opp_receiver)
-
             temp_opp_receiver = [User.objects.get(email=x.receiver) for x in opponent_receiver]
             temp_opp_sender = [User.objects.get(email=x.sender) for x in opponent_sender]
 
-            # https://stackoverflow.com/questions/431628/how-can-i-combine-two-or-more-querysets-in-a-django-view
             result_opp_user = list(chain(temp_opp_receiver, temp_opp_sender))
 
             slz = UserListSerializer(result_opp_user, many=True)
+            return Response(slz.data, status=status.HTTP_200_OK)
             
             # 테스트 정렬 코드
-
+        if connect_user == 'sort':
             room_list = ChatRoom.objects.filter(Q(sender=cur_user_id)|Q(receiver=cur_user_id))
 
-            room_info_list = []
-            for room in room_list:
-                room_info_list.append({
-                'room_id': room.id,
-                'receiver': room.receiver,
-                'sender': room.sender,
-                'last_message': None
-                })
-            
             room_id_list = list(room_list.values_list('id', flat=True))
 
             message_list = RoomMessage.objects.filter(room__in=room_id_list).order_by('created_at')
@@ -138,42 +126,21 @@ class UserListView(APIView):
             message_dict = {}
 
             for message_obj in message_list:
-                message_dict[message_obj.id] = message_obj
-                
-            # pprint(message_list)
+                message_dict[message_obj.room.id] = message_obj.created_at
             
-            for room in room_info_list:
-                cur_room_id = room['room_id']
-                # 채팅방만 생성되고 메세지가 없는 경우를 처리해줌
-                try:
-                    room['last_message'] = message_dict[cur_room_id]
-                except:
-                    continue
+            # user 상대방 방별로 정렬 완료
+            sort_message_room_id = [x[0] for x in sorted([(x, y) for x, y in message_dict.items()], key=lambda x: x[1], reverse=True)]
+
+            temp = []
             
-            # pprint(room_info_list)
-
-            for i in room_info_list:
-                print(i['last_message'].created_at)
+            for i in sort_message_room_id:
+                chatroom_obj = ChatRoom.objects.get(id=i)
+                if cur_user_id == chatroom_obj.sender.id:
+                    temp.append(User.objects.get(id=chatroom_obj.receiver.id))
+                else:
+                    temp.append(User.objects.get(id=chatroom_obj.sender.id))
             
-            room_info_list = sorted(room_info_list, key=lambda x: x['last_message'].created_at, reverse=True)
-
-            # ----------------------
-            # room_id_list = list(room_list.values('id', flat=True))
-            # message_list = RoomMessage.objects.filter(room__in=room_id_list).order_by('created_at')
-
-            # message_list = RoomMessage.objects.filter(room__in=room_list.values('id', flat=True)).order_by('created_at')
-
-            # gt lt
-
-            # print(message_list)
-
-            # message_dict = {}
-
-            # for message in message_list:
-            #     message_dict[message.room] = message
-            
-            
-            
+            slz = UserListSerializer(temp, many=True)
             return Response(slz.data, status=status.HTTP_200_OK)
         
         return Response({"msg" : "잘못된 요청입니다."}, status=status.HTTP_400_BAD_REQUEST)
