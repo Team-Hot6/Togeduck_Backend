@@ -119,10 +119,49 @@ class UserListView(APIView):
             slz = UserListSerializer(result_opp_user, many=True)
             
             # 테스트 정렬 코드
+            from pprint import pprint
 
             room_list = ChatRoom.objects.filter(Q(sender=cur_user_id)|Q(receiver=cur_user_id))
-            print(room_list)
-            print(room_list)
+
+            room_info_list = []
+            for room in room_list:
+                room_info_list.append({
+                'room_id': room.id,
+                'receiver': room.receiver,
+                'sender': room.sender,
+                'last_message': None
+                })
+            
+            room_id_list = list(room_list.values_list('id', flat=True))
+
+            message_list = RoomMessage.objects.filter(room__in=room_id_list).order_by('created_at')
+            
+            print(message_list)
+
+            message_dict = {}
+
+            for message_obj in message_list:
+                message_dict[message_obj.id] = message_obj
+            
+            for room in room_info_list:
+                cur_room_id = room['room_id']
+                # 채팅방만 생성되고 메세지가 없는 경우를 처리해줌
+                try:
+                    room['last_message'] = message_dict[cur_room_id]
+                except:
+                    continue
+            
+            # pprint(room_info_list)
+
+            # for i in room_info_list:
+            #     print(i['last_message'])
+            
+            # room_info_list = sorted(room_info_list, key=lambda x: x['last_message'].created_at, reverse=True)
+
+            # pprint(room_info_list)
+            # ----------------------
+            # room_id_list = list(room_list.values('id', flat=True))
+            # message_list = RoomMessage.objects.filter(room__in=room_id_list).order_by('created_at')
 
             # message_list = RoomMessage.objects.filter(room__in=room_list.values('id', flat=True)).order_by('created_at')
 
