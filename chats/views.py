@@ -72,6 +72,7 @@ class ChatRoomView(APIView):
     def post(self, request, room_id):
         return Response('', status=status.HTTP_200_OK)
 
+# 최신순으로 정렬하는 로직 추가 예정
 class UserListView(APIView):
     def get(self, request):
         connect_user = self.request.GET.get('connect')
@@ -93,26 +94,79 @@ class UserListView(APIView):
             opponent_receiver = ChatRoom.objects.filter(sender=cur_user_id)
             opponent_sender = ChatRoom.objects.filter(receiver=cur_user_id)
 
-            test = ChatRoom.objects.get(receiver=cur_user_id)
-            test1 = ChatRoom.objects.filter(receiver=cur_user_id)
-
             test_user = User.objects.get(id=cur_user_id)
 
             # 되는거 related name 사용
             # ex ) (객체).(related_name).all()
-            test2 = test_user.Room_sender.all()
+            test2 = test_user.chatroom_sender.all()
 
             # 되는거 related name 없이 _set 사용
             # ex) (객체).(모델_set).all() # 대소문자 구분 없음
-            test2 = test_user.chatroom_set.all()
+            # test2 = test_user.chatroom_set.all()
+
+            set_opponent_receiver = User.objects.filter(id=cur_user_id)
+            temp_set_opp_receiver = [x.chatroom_receiver.all() for x in set_opponent_receiver]
+
+            # print(set_opponent_receiver)
+            # print(temp_set_opp_receiver)
 
             temp_opp_receiver = [User.objects.get(email=x.receiver) for x in opponent_receiver]
             temp_opp_sender = [User.objects.get(email=x.sender) for x in opponent_sender]
 
+            # https://stackoverflow.com/questions/431628/how-can-i-combine-two-or-more-querysets-in-a-django-view
             result_opp_user = list(chain(temp_opp_receiver, temp_opp_sender))
 
             slz = UserListSerializer(result_opp_user, many=True)
             
+            # 테스트 정렬 코드
+
+            room_list = ChatRoom.objects.filter(Q(sender=cur_user_id)|Q(receiver=cur_user_id))
+            print(room_list)
+            print(room_list)
+
+            # message_list = RoomMessage.objects.filter(room__in=room_list.values('id', flat=True)).order_by('created_at')
+
+            # gt lt
+
+            # print(message_list)
+
+            # message_dict = {}
+
+            # for message in message_list:
+            #     message_dict[message.room] = message
+            
+            
+            
             return Response(slz.data, status=status.HTTP_200_OK)
         
         return Response({"msg" : "잘못된 요청입니다."}, status=status.HTTP_400_BAD_REQUEST)
+    
+"""
+room_list = ChatRoom.objects.filter(Q(sender=user)|Q(receiver=user))
+room_info_list = []
+for room in room_list:
+room_info_list.append({
+'room_id': room.id,
+'receiver': room.receiver,
+'sender': room.sender,
+'last_message': None
+})
+
+
+room_id_list = list(room_list.values('id', flat=True))
+message_list = RoomMessage.objects.filter(room__in=room_id_list).order_by('created_at')
+
+message_dict = {}
+
+for message in message_list:
+message_dict[message.room.id] = message
+
+for room in room_info_list:
+room['last_message'] = message_dict[room.id]
+
+room_info_list = sorted(
+room_info_list,
+key=lambda item: item['last_massage'].created_at
+reverse=True
+)
+"""
