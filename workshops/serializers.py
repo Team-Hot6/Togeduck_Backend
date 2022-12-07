@@ -57,7 +57,7 @@ class WorkshopListSerializer(serializers.ModelSerializer): # 워크샵 전체 �
 
     class Meta:
         model = Workshop
-        fields = ('title', 'content', 'workshop_image', 'category', 'location',)
+        fields = ('title', 'content', 'workshop_image', 'category', 'location', 'date')
 
 
 class WorkshopSerializer(serializers.ModelSerializer): # 특정 워크샵 상세 조회
@@ -95,7 +95,9 @@ class WorkshopCreateSerializer(serializers.ModelSerializer): # 워크샵 생성
 
 
 class SelectedHobbySerializer(serializers.ModelSerializer): # 마이페이지 - 내가 선택한 취미
-    hobby = serializers.StringRelatedField(many=True)
+    # hobby = serializers.StringRelatedField(many=True)
+    # category = HobbySerializer(many=True)
+    hobby = HobbySerializer(many=True)
     class Meta:
         model = User
         fields = ('hobby',)
