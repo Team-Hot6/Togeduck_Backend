@@ -4,10 +4,11 @@ from users.models import User
 
 class RoomMessageSerializer(serializers.ModelSerializer):
     cur_time = serializers.SerializerMethodField()
+    user = serializers.SerializerMethodField()
     date = serializers.SerializerMethodField()
 
-    # def get_user(self, obj):
-    #     return obj.user.nickname
+    def get_user(self, obj):
+        return obj.user.email
 
     def get_cur_time(self, obj):
         ampm = obj.created_at.strftime('%p')
