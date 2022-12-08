@@ -10,10 +10,6 @@ class ArticleListSerializer(serializers.ModelSerializer):
     time = serializers.SerializerMethodField()
     date = serializers.SerializerMethodField()
     like = serializers.SerializerMethodField()
-    watch = serializers.SerializerMethodField()
-    
-    def get_watch(self, obj):
-        return obj.watch.count()
 
     def get_like(self, obj):
         return obj.like.count()
@@ -57,10 +53,6 @@ class CommentListSerializer(serializers.ModelSerializer):
 class ArticleDetailSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
     category = serializers.StringRelatedField()
-    watch = serializers.SerializerMethodField()
-
-    def get_watch(self, obj):
-        return obj.watch.count()
 
     def get_user(self, obj):
         return obj.user.nickname

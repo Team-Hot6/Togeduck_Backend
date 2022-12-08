@@ -47,10 +47,10 @@ class ArticleDetailView(APIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     def get(self, request, article_id):
         article = get_object_or_404(Article, id=article_id)
-
-        if request.user.is_authenticated:
-            article.watch.add(request.user)
-
+        
+        article.views += 1
+        article.save()
+        
         serializer = ArticleDetailSerializer(article)
         
         return Response(serializer.data, status=status.HTTP_200_OK)

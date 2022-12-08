@@ -12,7 +12,7 @@ class Article(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     like = models.ManyToManyField(User, blank=True, related_name='article_like')
-    watch = models.ManyToManyField(User, related_name='article_watch')
+    views = models.BigIntegerField(default=0)
 
     def __str__(self):
         return str(self.title)
