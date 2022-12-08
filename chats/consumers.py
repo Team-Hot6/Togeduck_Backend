@@ -8,6 +8,12 @@ from datetime import datetime
 # 테스트 코드
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
+        # 로그인된 사용자인지 확인
+        # 추 후 토큰인증 확인 코드 추가예정
+        if self.scope['user']:
+            pass
+        else:
+            self.close()
         await self.accept()
                 
     # get message receive example
