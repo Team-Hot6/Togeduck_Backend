@@ -11,6 +11,7 @@ class Article(models.Model):
     article_image = models.ImageField(upload_to='article/', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    like = models.ManyToManyField(User, blank=True, related_name='article_like')
 
     def __str__(self):
         return str(self.title)

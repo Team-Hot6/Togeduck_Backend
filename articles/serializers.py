@@ -9,6 +9,10 @@ class ArticleListSerializer(serializers.ModelSerializer):
     comment_article = serializers.SerializerMethodField()
     time = serializers.SerializerMethodField()
     date = serializers.SerializerMethodField()
+    like = serializers.SerializerMethodField()
+    
+    def get_like(self, obj):
+        return obj.like.count()
 
     def get_time(self, obj):
         time = obj.created_at.strftime('%I:%M')
