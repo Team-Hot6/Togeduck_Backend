@@ -49,20 +49,6 @@ class WorkshopApply(models.Model):
         db_table = "workshop_apply"
 
 
-class WorkshopApply(models.Model):
-    CHOISE_TYPE = (
-    ('승인', '승인'),
-    ('거절', '거절'),
-    ('대기', '대기'))
-    workshop = models.ForeignKey(Workshop, on_delete=models.CASCADE)
-    guest = models.ForeignKey(User, on_delete=models.CASCADE) 
-    result = models.CharField("신청 유형", choices=CHOISE_TYPE, null=True, max_length=3)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        db_table = "workshop_apply"
-
-
 class Review(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reveiw_user')
     workshop = models.ForeignKey(Workshop, on_delete=models.CASCADE, related_name='review_workshop')
