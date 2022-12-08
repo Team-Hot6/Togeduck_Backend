@@ -45,7 +45,12 @@ class ReviewDetailView(APIView): # 리뷰 수정/삭제
 
 class WorkshopView(APIView):
     def get(self, request):
-        workshops = Workshop.objects.all()
+        category_id = self.request.GET.get('category')
+        if category_id:
+            workshops = Workshop.objects.filter(category=category_id)
+        else:
+            workshops = Workshop.objects.all()
+
         serializer = WorkshopListSerializer(workshops, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     

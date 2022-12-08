@@ -48,6 +48,8 @@ class ReviewSerializer(serializers.ModelSerializer): # 특정 워크샵 상세�
 class WorkshopListSerializer(serializers.ModelSerializer): # 워크샵 전체 목록 조회
     category = serializers.SerializerMethodField()
     location = serializers.SerializerMethodField()
+    date = serializers.SerializerMethodField()
+    cur_time = serializers.SerializerMethodField()
 
     def get_category(self, obj):
         return obj.category.category
@@ -55,9 +57,18 @@ class WorkshopListSerializer(serializers.ModelSerializer): # 워크샵 전체 �
     def get_location(self, obj):
         return obj.location.district
 
+    def get_date(self, obj):
+        return obj.date.strftime('%Y년 %m월 %d일 %A')
+
+    def get_cur_time(self, obj):
+        ampm = obj.date.strftime('%p')
+        time = obj.date.strftime('%I:%M')
+        time = f'AM {time}' if ampm == 'AM' else f'PM {time}'
+        return time
+
     class Meta:
         model = Workshop
-        fields = ('pk', 'title', 'content', 'workshop_image', 'category', 'location',)
+        fields = ('pk', 'title', 'workshop_image', 'category', 'location', 'date', 'cur_time',)
 
 
 class WorkshopSerializer(serializers.ModelSerializer): # 특정 워크샵 상세 조회
