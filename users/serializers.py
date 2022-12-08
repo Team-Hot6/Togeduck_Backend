@@ -1,7 +1,9 @@
+from articles.models import Article
+from users.models import User
 from rest_framework import serializers
-from users.models import User 
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer 
 import re
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer 
+
 
 # 회원가입
 class UserSerializer(serializers.ModelSerializer):
@@ -54,7 +56,8 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def get_token(cls, user):
         token = super().get_token(user)
         token['email'] = user.email 
-        print(token['email'])
+        # 채팅에서 쓸 user id 저장해줌
+        token['user_id'] = user.id
         return token
 
 # user list view serializer
