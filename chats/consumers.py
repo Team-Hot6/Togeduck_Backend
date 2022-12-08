@@ -90,6 +90,7 @@ class CreateRoom(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
+        user = self.scope['user'].email
         room_id = text_data_json['room_id']
         message = text_data_json['message']
         # 프론트에서 sender_id, receiver_id 보내주는 로직 필요
@@ -122,7 +123,8 @@ class CreateRoom(AsyncWebsocketConsumer):
             'sender': sender.id,
             'room_id': room_id,
             'cur_time': cur_time,
-            'date': date
+            'date': date,
+            'user': user
             }
         
         await self.channel_layer.group_send(
@@ -135,6 +137,8 @@ class CreateRoom(AsyncWebsocketConsumer):
 
     # Receive message from room group
     async def chat_message(self, event):
+        user = self.scope['user'].email
+        
         message_data = json.loads(event['message'])
         message = message_data['message']
         sender = message_data['sender']
@@ -148,7 +152,8 @@ class CreateRoom(AsyncWebsocketConsumer):
             "sender": sender,
             "cur_time": cur_time,
             "date": date,
-            "room_id": room_id
+            "room_id": room_id,
+            'user': user
             }))
 
     @database_sync_to_async
