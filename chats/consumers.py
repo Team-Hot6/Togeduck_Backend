@@ -9,7 +9,7 @@ from datetime import datetime
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         # 로그인된 사용자인지 확인
-        # 추 후 토큰인증 확인 코드 추가예정
+        # 추 후 토큰인증 확인 코드 추가
         if self.scope['user']:
             pass
         else:
@@ -78,6 +78,11 @@ class CreateRoom(AsyncWebsocketConsumer):
     # django channels authentication 로그인 관련한 인증 기능 추가해야 함
     async def connect(self):
         # get room_id value
+        # if self.scope['user']:
+        #     pass
+        # else:
+        #     self.close()
+        print(self.scope['user'])
         self.room_name = self.scope["url_route"]["kwargs"]["room_id"]
         self.room_group_name = "chat_%s" % self.room_name
         
@@ -99,18 +104,13 @@ class CreateRoom(AsyncWebsocketConsumer):
         user = self.scope['user'].email
         room_id = text_data_json['room_id']
         message = text_data_json['message']
-        # 프론트에서 sender_id, receiver_id 보내주는 로직 필요
         sender_id = text_data_json['sender_id']
-        receiver_id = text_data_json['receiver_id']
         
         sender = await self.get_user_db(sender_id)
-        receiver = await self.get_user_db(receiver_id)
         room_object = await self.get_chatroom_db(room_id)
 
         if not sender:
             print('Sender user가 조회되지 않습니다.')
-        if not receiver:
-            print('Receiver user가 조회되지 않습니다.')
         if not message:
             print('message가 없습니다.')
             return
