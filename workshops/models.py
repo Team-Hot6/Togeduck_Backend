@@ -17,7 +17,7 @@ class Location(models.Model):
 
 
 class Workshop(models.Model):
-    category = models.ForeignKey(Hobby, on_delete=models.CASCADE)
+    category = models.ForeignKey(Hobby, on_delete=models.CASCADE, related_name='workshop_category')
     host = models.ForeignKey(User, on_delete=models.CASCADE, related_name='workshop_host')
     date = models.DateTimeField()
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
@@ -32,7 +32,8 @@ class Workshop(models.Model):
     likes = models.ManyToManyField(User, related_name='workshop_likes', blank=True)
 
     def __str__(self):
-        return str(self.title)
+        return self.title 
+
 
 
 class WorkshopApply(models.Model):
@@ -58,3 +59,7 @@ class Review(models.Model):
 
     def __str__(self):
         return str(self.content)
+
+
+
+
