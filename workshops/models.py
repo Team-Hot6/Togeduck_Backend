@@ -17,7 +17,7 @@ class Location(models.Model):
 
 
 class Workshop(models.Model):
-    category = models.ForeignKey(Hobby, on_delete=models.CASCADE)
+    category = models.ForeignKey(Hobby, on_delete=models.CASCADE, related_name='workshop_category')
     host = models.ForeignKey(User, on_delete=models.CASCADE, related_name='workshop_host')
     date = models.DateTimeField()
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
@@ -28,7 +28,7 @@ class Workshop(models.Model):
     max_client = models.IntegerField()
     amount = models.DecimalField(decimal_places=0, max_digits=10000000000000000)
     created_at = models.DateTimeField(auto_now_add=True)
-    participant = models.ManyToManyField(User, related_name='member', symmetrical=False)
+    participant = models.ManyToManyField(User, related_name='member', symmetrical=False, blank=True)
     likes = models.ManyToManyField(User, related_name='workshop_likes')
     
     def __str__(self):

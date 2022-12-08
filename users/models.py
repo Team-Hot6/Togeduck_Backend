@@ -31,7 +31,7 @@ class UserManager(BaseUserManager):
 
 # 사용자모델 
 class User(AbstractBaseUser):
-    email = models.EmailField("이메일" ,max_length=255, unique=True) 
+    email = models.EmailField("이메일" , max_length=255, unique=True) 
     nickname = models.CharField("닉네임", max_length=15, unique=True)
     hobby = models.ManyToManyField('workshops.Hobby')
     profile_image = models.ImageField(blank=True)

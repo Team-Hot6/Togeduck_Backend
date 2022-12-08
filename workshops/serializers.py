@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from workshops.models import Hobby, Location, Workshop, Review
+from users.models import User
 
 
 # 댓글 보기 GET
@@ -56,7 +57,7 @@ class WorkshopListSerializer(serializers.ModelSerializer): # 워크샵 전체 �
 
     class Meta:
         model = Workshop
-        fields = ('title', 'content', 'workshop_image', 'category', 'location',)
+        fields = ('title', 'content', 'workshop_image', 'category', 'location', 'date')
 
 
 class WorkshopSerializer(serializers.ModelSerializer): # 특정 워크샵 상세 조회
@@ -91,3 +92,27 @@ class WorkshopCreateSerializer(serializers.ModelSerializer): # 워크샵 생성
     class Meta:
         model = Workshop
         fields = ('title', 'content', 'workshop_image', 'category', 'location', 'address', 'amount', 'date', 'max_client',)
+
+
+class SelectedHobbySerializer(serializers.ModelSerializer): # 마이페이지 - 내가 선택한 취미
+    # hobby = serializers.StringRelatedField(many=True)
+    # category = HobbySerializer(many=True)
+    hobby = HobbySerializer(many=True)
+    class Meta:
+        model = User
+        fields = ('hobby',)
+
+
+class AppliedWorkshopSerializer(serializers.ModelSerializer): # 마이페이지 - 신청 워크샵
+    member = WorkshopListSerializer(many=True)
+    class Meta:
+        model = User
+        fields = ('member',) # (이후 변경 예정)
+
+
+class CreatedWorkshopSerializer(serializers.ModelSerializer): # 마이페이지 - 생성 워크샵
+    workshop_host = WorkshopListSerializer(many=True)
+    class Meta:
+        model = User
+        fields = ('workshop_host',)  # (이후 변경 예정)
+
