@@ -54,7 +54,7 @@ class WorkshopView(ListAPIView):
         category_id = self.request.GET.get('category')
 
         if category_id:
-            self.queryset = Workshop.objects.filter(category=category_id)
+            self.queryset = Workshop.objects.filter(category=category_id).order_by('-created_at')
 
         pages = self.paginate_queryset(self.get_queryset())
         slz = self.get_serializer(pages, many=True)
