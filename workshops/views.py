@@ -5,16 +5,26 @@ from rest_framework.response import Response
 from workshops.models import Workshop,Review,Hobby
 from workshops.serializers import ReviewSerializer,ReviewCreateSerializer,WorkshopSerializer,WorkshopCreateSerializer,WorkshopListSerializer,HobbySerializer
 from rest_framework import permissions
+from workshops.paginations import workshop_page
+from rest_framework.generics import ListAPIView
 
 
 
-
-
-class WorkshopView(APIView):
+class WorkshopView(ListAPIView):
+    pagination_class = workshop_page
+    serializer_class = WorkshopListSerializer
+    queryset = Workshop.objects.all().order_by('-created_at')
+    
     def get(self, request):
-        workshops = Workshop.objects.all()
-        serializer = WorkshopListSerializer(workshops, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        category_id = self.request.GET.get('category')
+
+        if category_id:
+            self.queryset = Workshop.objects.filter(category=category_id).order_by('-created_at')
+
+        pages = self.paginate_queryset(self.get_queryset())
+        slz = self.get_serializer(pages, many=True)
+
+        return self.get_paginated_response(slz.data)
     
     def post(self, request):
         serializer = WorkshopCreateSerializer(data=request.data)
@@ -23,6 +33,7 @@ class WorkshopView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 # 취미 카테고리
@@ -101,3 +112,22 @@ class ReviewDetailView(APIView):
             return Response("삭제합니다", status=status.HTTP_204_NO_CONTENT)
         else:
             return Response("권한 없다", status=status.HTTP_403_FORBIDDEN)
+
+
+
+
+
+
+
+
+# 좋아요
+class LikeView(APIView):
+    def post(self, request, workshop_id):
+        workshop = get_object_or_404(Workshop, id=workshop_id)
+
+        if request.user in workshop.likes.all():
+            workshop.likes.remove(request.user)
+            return Response({"msg":"워크샵 좋아요를 취소했습니다."}, status=status.HTTP_200_OK)
+        else: 
+            workshop.likes.add(request.user)
+            return Response({"msg":"워크샵을 좋아요했습니다."}, status=status.HTTP_200_OK)

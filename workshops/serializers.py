@@ -24,7 +24,7 @@ class ReviewSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Review
-        fields = ('id', 'content', 'user', 'created_at', 'updated_at',)
+        fields = ('content', 'user', 'created_at', 'updated_at',)
 
 
 # 리뷰 수정 PUT , 작성 POST
@@ -59,12 +59,13 @@ class WorkshopListSerializer(serializers.ModelSerializer):
 
 
 # 워크샵 상세 조회
-class WorkshopSerializer(serializers.ModelSerializer):
+class WorkshopSerializer(serializers.ModelSerializer): # 특정 워크샵 상세 조회
     host = serializers.SerializerMethodField()
     likes_count = serializers.SerializerMethodField()
     participant_count = serializers.SerializerMethodField()
     category = serializers.SerializerMethodField()
     location = serializers.SerializerMethodField()
+    review_workshop = ReviewSerializer(many=True)
 
     def get_host(self, obj):
         return obj.host.nickname
@@ -83,8 +84,7 @@ class WorkshopSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Workshop
-        fields = ('date', 'address', 'title', 'content', 'workshop_image', 'max_client', 'amount', 'category', 'location', 'host', 'likes_count', 'participant_count',)
-        read_only_fields = ('host',)
+        fields = ('pk', 'title', 'content', 'workshop_image', 'category', 'location', 'address', 'host', 'host_id', 'amount', 'date', 'created_at', 'max_guest', 'participant_count', 'likes_count', 'review_workshop',)
 
 
 
@@ -92,4 +92,4 @@ class WorkshopSerializer(serializers.ModelSerializer):
 class WorkshopCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Workshop
-        fields = ('date', 'address', 'title', 'content', 'workshop_image', 'max_client', 'amount', 'category', 'location', )
+        fields = ('date', 'address', 'title', 'content', 'workshop_image', 'max_guest', 'amount', 'category', 'location', )

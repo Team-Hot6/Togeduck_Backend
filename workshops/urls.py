@@ -10,6 +10,8 @@ urlpatterns = [
     path('<int:workshop_id>/review/<int:reviews_id>/', views.ReviewDetailView.as_view(), name='CommentDetailView'), # 댓글 수정/삭제
     path('<int:workshop_id>/', views.WorkshopDetailView.as_view(), name='workshop_detail_view'),
     path('hobby/', views.HobbyView.as_view(), name='HobbyView'),
+
+    path('<int:workshop_id>/like/', views.LikeView.as_view(), name='like_view'),
 ]
 
 
