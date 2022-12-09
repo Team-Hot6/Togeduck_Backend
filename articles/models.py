@@ -1,6 +1,6 @@
 from django.db import models
 from users.models import User
-from workshops.models import Hobby, Workshop
+from workshops.models import Hobby
 
 
 class Article(models.Model):
@@ -27,3 +27,4 @@ class Comment(models.Model):
 
     def __str__(self):
         return str(self.content)
+
