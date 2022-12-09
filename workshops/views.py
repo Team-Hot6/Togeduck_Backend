@@ -5,6 +5,8 @@ from rest_framework.response import Response
 from workshops.models import Workshop, Review, WorkshopApply, Hobby
 from workshops.serializers import ReviewSerializer,ReviewCreateSerializer, WorkshopSerializer, WorkshopListSerializer, WorkshopCreateSerializer, HobbySerializer
 from rest_framework import permissions
+from workshops.paginations import workshop_page
+from rest_framework.generics import ListAPIView
 
 
 class ReviewView(APIView): # 리뷰 보기/작성
@@ -62,6 +64,25 @@ class WorkshopView(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+# pagination 적용
+class WorkshopView_2(ListAPIView):
+    pagination_class = workshop_page
+    serializer_class = WorkshopListSerializer
+    queryset = Workshop.objects.all()
+    
+    def get(self, request):
+        pages = self.paginate_queryset(self.get_queryset())
+        slz = self.get_serializer(pages, many=True)
+
+        return self.get_paginated_response(slz.data)
+    
+    def post(self, request):
+        serializer = WorkshopCreateSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(host=request.user)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class WorkshopDetailView(APIView):
     def get(self, request, workshop_id):
