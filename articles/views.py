@@ -43,7 +43,9 @@ class ArticleView_2(ListAPIView):
                 get_hobby = Hobby.objects.get(category=get_category_value)
             except:
                 return self.get_paginated_response({"msg":"카테고리가 존재하지 않습니다."}, status=status.HTTP_200_OK)
-            pages = self.paginate_queryset(Article.objects.filter(category=get_hobby.id))
+
+            self.queryset = Article.objects.filter(category=get_hobby.id)
+            pages = self.paginate_queryset(self.get_queryset())
             slz = self.get_serializer(pages, many=True)
             return self.get_paginated_response(slz.data, status=status.HTTP_200_OK)
         
