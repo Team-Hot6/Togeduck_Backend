@@ -33,7 +33,7 @@ class ArticleView_2(ListAPIView):
     permission_classes = [permissions.AllowAny]
     
     pagination_class = article_total_page
-    slz = ArticleListSerializer
+    serializer_class = ArticleListSerializer
     queryset = Article.objects.all()
     
     def get(self, request):
@@ -47,11 +47,11 @@ class ArticleView_2(ListAPIView):
             self.queryset = Article.objects.filter(category=get_hobby.id)
             pages = self.paginate_queryset(self.get_queryset())
             slz = self.get_serializer(pages, many=True)
-            return self.get_paginated_response(slz.data, status=status.HTTP_200_OK)
+            return self.get_paginated_response(slz.data)
         
         pages = self.paginate_queryset(self.get_queryset())
         slz = self.get_serializer(pages, many=True)
-        return self.get_paginated_response(slz.data, status=status.HTTP_200_OK)
+        return self.get_paginated_response(slz.data)
 
 
 # 게시글 작성페이지
