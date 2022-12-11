@@ -35,7 +35,6 @@ class Workshop(models.Model):
         return self.title 
 
 
-
 class WorkshopApply(models.Model):
     CHOISE_TYPE = (
     ('승인', '승인'),
@@ -49,6 +48,7 @@ class WorkshopApply(models.Model):
     class Meta:
         db_table = "workshop_apply"
 
+
 class Review(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reveiw_user')
     workshop = models.ForeignKey(Workshop, on_delete=models.CASCADE, related_name='review_workshop')
@@ -58,7 +58,3 @@ class Review(models.Model):
 
     def __str__(self):
         return str(self.content)
-
-
-
-
