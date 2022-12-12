@@ -10,4 +10,5 @@ urlpatterns = [
     path('<int:workshop_id>/apply/', views.ApplyView.as_view(), name='apply_view'),
     path('<int:workshop_id>/like/', views.LikeView.as_view(), name='like_view'),
     path('hobby/', views.HobbyView.as_view(), name='hobby_view'),
+    path('popular/', views.WorkshopPopularView.as_view(), name='workshop_popular_view'),
 ]

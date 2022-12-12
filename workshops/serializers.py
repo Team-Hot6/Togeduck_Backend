@@ -43,7 +43,7 @@ class ReviewSerializer(serializers.ModelSerializer): # 특정 워크샵 상세�
     class Meta:
         model = Review
         fields = ('id', 'content', 'user', 'created_at', 'updated_at',)
-
+  
 
 class WorkshopListSerializer(serializers.ModelSerializer): # 워크샵 전체 목록 조회
     category = serializers.SerializerMethodField()
@@ -68,7 +68,7 @@ class WorkshopListSerializer(serializers.ModelSerializer): # 워크샵 전체 �
 
     class Meta:
         model = Workshop
-        fields = ('pk', 'title', 'workshop_image', 'category', 'location', 'date', 'cur_time',)
+        fields = ('id', 'title', 'workshop_image', 'category', 'location', 'date', 'cur_time',)
 
 
 class WorkshopSerializer(serializers.ModelSerializer): # 특정 워크샵 상세 조회
