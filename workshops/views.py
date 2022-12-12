@@ -7,6 +7,7 @@ from workshops.serializers import ReviewSerializer,ReviewCreateSerializer, Works
 from rest_framework import permissions
 from workshops.paginations import workshop_page
 from rest_framework.generics import ListAPIView
+from django.db.models import Count
 
 
 class ReviewView(APIView): # 리뷰 보기/작성
@@ -45,32 +46,17 @@ class ReviewDetailView(APIView): # 리뷰 수정/삭제
             return Response({"msg":"권한이 없습니다."}, status=status.HTTP_403_FORBIDDEN)
 
 
-class WorkshopView(APIView):
-    def get(self, request):
-        category_id = self.request.GET.get('category')
-        if category_id:
-            workshops = Workshop.objects.filter(category=category_id)
-        else:
-            workshops = Workshop.objects.all()
-
-        serializer = WorkshopListSerializer(workshops, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    
-    def post(self, request):
-        serializer = WorkshopCreateSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(host=request.user)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-# pagination 적용
-class WorkshopView_2(ListAPIView):
+class WorkshopView(ListAPIView):
     pagination_class = workshop_page
     serializer_class = WorkshopListSerializer
-    queryset = Workshop.objects.all()
+    queryset = Workshop.objects.all().order_by('-created_at')
     
     def get(self, request):
+        category_id = self.request.GET.get('category')
+
+        if category_id:
+            self.queryset = Workshop.objects.filter(category=category_id).order_by('-created_at')
+
         pages = self.paginate_queryset(self.get_queryset())
         slz = self.get_serializer(pages, many=True)
 
@@ -83,6 +69,7 @@ class WorkshopView_2(ListAPIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class WorkshopDetailView(APIView):
     def get(self, request, workshop_id):
@@ -153,4 +140,11 @@ class HobbyView(APIView): # 취미 카테고리
     def get(self, request):
         workshops = Hobby.objects.all()
         serializer = HobbySerializer(workshops, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class WorkshopPopularView(APIView):
+    def get(self, request):
+        popular_workshop = Workshop.objects.annotate(like_count=Count('likes')).order_by('-like_count', '-created_at')[:7]
+        serializer = WorkshopListSerializer(popular_workshop, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
