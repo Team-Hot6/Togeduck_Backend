@@ -14,26 +14,21 @@ from rest_framework.generics import ListAPIView
 class ArticleView(ListAPIView):
     permission_classes = [permissions.AllowAny]
     def get(self, request):
-        get_category_value = self.request.GET.get('category')
-        if get_category_value:
-            try:
-                get_hobby = Hobby.objects.get(category=get_category_value)
-            except:
-                return Response({"msg":"카테고리가 존재하지 않습니다."}, status=status.HTTP_200_OK)
-            articles = Article.objects.filter(category=get_hobby.id)
-            serializer = ArticleListSerializer(articles, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        articles = Article.objects.all()
+        category_id = self.request.GET.get('category')
+        if category_id:
+            articles = Article.objects.filter(category=category_id)
+        else:
+            articles = Article.objects.all()
         serializer = ArticleListSerializer(articles, many=True)
-        
         return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 # 페이지네이션 적용 아티클 뷰
 class ArticleView_2(ListAPIView):
     permission_classes = [permissions.AllowAny]
     
     pagination_class = article_total_page
-    slz = ArticleListSerializer
+    serializer_class = ArticleListSerializer
     queryset = Article.objects.all()
     
     def get(self, request):
@@ -72,7 +67,12 @@ class ArticleDetailView(APIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     def get(self, request, article_id):
         article = get_object_or_404(Article, id=article_id)
+        
+        article.views += 1
+        article.save()
+        
         serializer = ArticleDetailSerializer(article)
+        
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def put(self, request, article_id):    
