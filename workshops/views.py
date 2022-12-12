@@ -139,7 +139,7 @@ class LikeView(APIView):
 class HobbyView(APIView): # 취미 카테고리
     def get(self, request):
         workshops = Hobby.objects.all()
-        serializer = HobbySerializer(workshops, many=True)
+        serializer = HobbySerializer(workshops, many=True
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 

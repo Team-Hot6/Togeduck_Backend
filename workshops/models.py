@@ -1,5 +1,6 @@
 from django.db import models
 from users.models import User
+from .utils import rename_imagefile_to_uuid
 
 
 class Hobby(models.Model):
@@ -24,7 +25,7 @@ class Workshop(models.Model):
     address = models.CharField(max_length=20)
     title = models.CharField(max_length=20)
     content = models.TextField(max_length=500)
-    workshop_image = models.ImageField(upload_to='workshop/')
+    workshop_image = models.ImageField(upload_to=rename_imagefile_to_uuid)
     max_guest = models.IntegerField()
     amount = models.DecimalField(decimal_places=0, max_digits=10000000000000000)
     created_at = models.DateTimeField(auto_now_add=True)
