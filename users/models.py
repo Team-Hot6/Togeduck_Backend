@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import (
     BaseUserManager, AbstractBaseUser
 )
+from .utils import rename_imagefile_to_uuid
 
 class UserManager(BaseUserManager):
     def create_user(self, email, nickname ,password=None): 
@@ -34,7 +35,7 @@ class User(AbstractBaseUser):
     email = models.EmailField("이메일" , max_length=255, unique=True) 
     nickname = models.CharField("닉네임", max_length=15, unique=True)
     hobby = models.ManyToManyField('workshops.Hobby')
-    profile_image = models.ImageField(blank=True)
+    profile_image = models.ImageField(default='media/default_profile/default.PNG', upload_to=rename_imagefile_to_uuid)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
     objects = UserManager()
