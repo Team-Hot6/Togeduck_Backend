@@ -7,6 +7,8 @@ from rest_framework.generics import get_object_or_404
 from workshops.models import Hobby
 from articles.paginations import article_top10_page, article_total_page
 from rest_framework.generics import ListAPIView
+# test
+from .articlecron import get_score
 
 # request ex) http://www.naver.com/user/?category=축구/
 
@@ -120,3 +122,9 @@ class CommentDeleteView(APIView):
             comment.delete()
             return Response({"msg":"댓글 삭제 완료!"}, status=status.HTTP_200_OK)
         return Response({"msg":"댓글을 삭제할 권한이 없습니다!"}, status=status.HTTP_403_FORBIDDEN)
+
+class TestView(APIView):
+    def get(self, request):
+        get_score()
+        print('!!!!!!!!!!')
+        return Response('')
