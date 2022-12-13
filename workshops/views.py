@@ -62,9 +62,13 @@ class WorkshopView(ListAPIView):
         return self.get_paginated_response(slz.data)
     
     def post(self, request):
+        print('짜증낭ㅇㅎㅇㅎㅇㅀ')
+        print(request.data)
         serializer = WorkshopCreateSerializer(data=request.data)
+        
         if serializer.is_valid():
             serializer.save(host=request.user)
+            print('adsadasdasdsadsadsadsad')
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -2,17 +2,6 @@ from rest_framework import serializers
 from workshops.models import Hobby, Location, Workshop, Review
 from users.models import User
 
-
-# 댓글 보기 GET
-class ReviewSerializer(serializers.ModelSerializer):
-    user = serializers.SerializerMethodField()
-
-    def get_user(self, obj): 
-        return obj.user.email 
-
-    class Meta:
-        model = Review 
-        fields = '__all__' 
        
 
 # 댓글 작성 POST, 댓글 수정 PUT 
@@ -43,7 +32,7 @@ class ReviewSerializer(serializers.ModelSerializer): # 특정 워크샵 상세�
 
     class Meta:
         model = Review
-        fields = ('content', 'user', 'created_at', 'updated_at',)
+        fields = ('id','content', 'user', 'created_at', 'updated_at','user_id')
 
 
 # 리뷰 수정 PUT , 작성 POST
