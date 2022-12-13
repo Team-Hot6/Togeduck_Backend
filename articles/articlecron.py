@@ -6,26 +6,26 @@ from pathlib import Path
 
 # if __name__ == "__main__":
 def get_score():
-    category_score_dict = {1: 20, 2: 20, 3: 20, 4: 20, 5: 20, 6: 20, 7: 20, 8: 20, 9: 20}
+    category_score_dict = {1: 100, 2: 100, 3: 100, 4: 100, 5: 100, 6: 100, 7: 100, 8: 100, 9: 100}
     like_multiple = 1.2
     view_multiple = 1
-    time_multiple = 0.2
+    time_multiple = 0.1
     current_time = datetime.now()
 
     # 취미 카테고리별 점수
     def score(obj) -> int:
         result = 1
-        result *= category_score_dict[obj.category.id]
-        result *= obj.like.count() * like_multiple
-        result *= obj.views * view_multiple
+        result += category_score_dict[obj.category.id]
+        result += obj.like.count() * like_multiple
+        result += obj.views * view_multiple
 
         hour_diff_sec = (current_time - obj.created_at).total_seconds() / 3600
         
-        # (10 - 시간배수 * 시간차이(hours)) 시간당 0.2 배수 차이
-        # ex) 1시간 -> 9.8 , 2시간 -> 9.6
+        # (10 - 시간배수 * 시간차이(hours)) 시간당 0.1 배수 차이
+        # ex) 1시간 -> 9.9 , 2시간 -> 9.8
+        print(result)
+        print(hour_diff_sec)
         return result * (10 - (time_multiple * hour_diff_sec))
-
-    time_now = datetime.now()
 
     article_obj = Article.objects.filter(
         Q(created_at__gte=(datetime.now() - timedelta(days=2))) 
@@ -36,12 +36,16 @@ def get_score():
 
     article_score_id_list.sort(key=lambda x:x[1], reverse=True)
 
+    print(article_score_id_list)
+
+    result = {}
+
     result_id = [article_score_id_list[x][0].id for x in range(len(article_score_id_list))]
 
-    print(result_id)
+    result['result'] = result_id
 
     BASE_DIR = Path(__file__).resolve().parent.parent
-    article_lank_file = os.path.join(BASE_DIR, 'article_lank.json')
+    lank_file_path = os.path.join(BASE_DIR, 'Lank.json')
 
-    with open(article_lank_file, 'w') as f:
-        f.write({'result': f'result_id'})
+    with open(lank_file_path, 'w') as f:
+        json.dump(result, f, indent=4)

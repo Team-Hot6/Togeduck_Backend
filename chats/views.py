@@ -29,6 +29,7 @@ class ChatListView(APIView):
         return Response('', status=status.HTTP_200_OK)
     
     # 채팅방 생성하기
+    # 채팅방 생성하면서 띄워주고 채팅까지 연결해주는 로직 생성 필요
     def post(self, request):
         sender_id = request.user.id
         receiver_id = request.data['user_id']
