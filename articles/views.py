@@ -62,7 +62,7 @@ class ArticleCreateView(APIView):
             return Response(serialzier.data, status=status.HTTP_201_CREATED)
         return Response(serialzier.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# 게시글 상세페이지(조회/수정/삭제)
+# 게시글 상세페이지(조회/추천/수정/삭제)
 class ArticleDetailView(APIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     def get(self, request, article_id):
@@ -74,6 +74,15 @@ class ArticleDetailView(APIView):
         serializer = ArticleDetailSerializer(article)
         
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def post(self, request, article_id):
+        article = get_object_or_404(Article, id=article_id)
+        if request.user in article.like.all():
+            article.like.remove(request.user)
+            return Response({"msg":"취소!"}, status=status.HTTP_200_OK)
+        else:
+            article.like.add(request.user)
+            return Response({"msg":"추천!"}, status=status.HTTP_200_OK)
 
     def put(self, request, article_id):    
         article = get_object_or_404(Article, id=article_id)
