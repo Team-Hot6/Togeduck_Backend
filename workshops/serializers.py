@@ -64,7 +64,7 @@ class WorkshopListSerializer(serializers.ModelSerializer): # 워크샵 전체 �
 
     class Meta:
         model = Workshop
-        fields = ('title', 'content', 'workshop_image', 'category', 'location', 'date', 'workshop_apply')
+        fields = ('pk','title', 'content', 'workshop_image', 'category', 'location', 'date', 'workshop_apply')
 
 
 class WorkshopSerializer(serializers.ModelSerializer): # 특정 워크샵 상세 조회
