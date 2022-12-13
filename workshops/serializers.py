@@ -1,6 +1,13 @@
 from rest_framework import serializers
-from workshops.models import Hobby, Location, Workshop, Review
+from workshops.models import Hobby, Location, Workshop, Review, WorkshopApply
 
+
+class WorkshopApplySerializer(serializers.ModelSerializer):
+    guest = serializers.StringRelatedField()
+    workshop = serializers.StringRelatedField()
+    class Meta:
+        model = WorkshopApply
+        fields = ('guest_id', 'guest', 'workshop', 'result', 'created_at')
 
 # 댓글 보기 GET
 class ReviewSerializer(serializers.ModelSerializer):
@@ -47,6 +54,7 @@ class ReviewSerializer(serializers.ModelSerializer): # 특정 워크샵 상세�
 class WorkshopListSerializer(serializers.ModelSerializer): # 워크샵 전체 목록 조회
     category = serializers.SerializerMethodField()
     location = serializers.SerializerMethodField()
+    workshop_apply = WorkshopApplySerializer(many=True)
 
     def get_category(self, obj):
         return obj.category.category
@@ -56,7 +64,7 @@ class WorkshopListSerializer(serializers.ModelSerializer): # 워크샵 전체 �
 
     class Meta:
         model = Workshop
-        fields = ('title', 'content', 'workshop_image', 'category', 'location', 'date')
+        fields = ('title', 'content', 'workshop_image', 'category', 'location', 'date', 'workshop_apply')
 
 
 class WorkshopSerializer(serializers.ModelSerializer): # 특정 워크샵 상세 조회
@@ -66,6 +74,7 @@ class WorkshopSerializer(serializers.ModelSerializer): # 특정 워크샵 상세
     category = serializers.SerializerMethodField()
     location = serializers.SerializerMethodField()
     review_workshop = ReviewSerializer(many=True)
+    workshop_apply = WorkshopApplySerializer(many=True)
 
     def get_host(self, obj):
         return obj.host.nickname
@@ -84,12 +93,21 @@ class WorkshopSerializer(serializers.ModelSerializer): # 특정 워크샵 상세
 
     class Meta:
         model = Workshop
-        fields = ('pk', 'title', 'content', 'workshop_image', 'category', 'location', 'address', 'host', 'host_id', 'amount', 'date', 'created_at', 'max_guest', 'participant_count', 'likes_count', 'review_workshop',)
+        fields = ('pk', 'title', 'content', 'workshop_image', 'category', 'location', 'address', 'host', 'host_id', 'amount', 'date', 'created_at', 'max_guest', 'participant_count', 'likes_count', 'review_workshop', 'workshop_apply')
 
 
 class WorkshopCreateSerializer(serializers.ModelSerializer): # 워크샵 생성, 수정
     class Meta:
         model = Workshop
         fields = ('title', 'content', 'workshop_image', 'category', 'location', 'address', 'amount', 'date', 'max_guest',)
+
+
+class WorkshopLikeSerializer(serializers.ModelSerializer): # 마이페이지 - 좋아요 한 워크샵
+    class Meta:
+        model = Workshop
+        fields = ( 'pk', 'title',)
+
+
+
 
 

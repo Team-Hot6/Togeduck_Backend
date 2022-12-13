@@ -41,8 +41,8 @@ class WorkshopApply(models.Model):
     ('승인', '승인'),
     ('거절', '거절'),
     ('대기', '대기'))
-    workshop = models.ForeignKey(Workshop, on_delete=models.CASCADE)
-    guest = models.ForeignKey(User, on_delete=models.CASCADE) 
+    workshop = models.ForeignKey(Workshop, on_delete=models.CASCADE, related_name='workshop_apply')
+    guest = models.ForeignKey(User, on_delete=models.CASCADE, related_name='workshop_apply_guest') 
     result = models.CharField("신청 유형", choices=CHOISE_TYPE, null=True, max_length=3)
     created_at = models.DateTimeField(auto_now_add=True)
 
