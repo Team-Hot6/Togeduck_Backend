@@ -105,7 +105,7 @@ class WorkshopCreateSerializer(serializers.ModelSerializer): # 워크샵 생성,
 class WorkshopLikeSerializer(serializers.ModelSerializer): # 마이페이지 - 좋아요 한 워크샵
     class Meta:
         model = Workshop
-        fields = ( 'pk', 'title', 'workshop_image')
+        fields = ( 'pk', 'title', 'workshop_image', 'location', 'address')
 
 
 
