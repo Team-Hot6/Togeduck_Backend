@@ -2,13 +2,6 @@ from rest_framework import serializers
 from workshops.models import Hobby, Location, Workshop, Review, WorkshopApply
 
 
-class WorkshopApplySerializer(serializers.ModelSerializer):
-    guest = serializers.StringRelatedField()
-    workshop = serializers.StringRelatedField()
-    class Meta:
-        model = WorkshopApply
-        fields = ('guest_id', 'guest', 'workshop', 'result', 'created_at')
-
 # 댓글 보기 GET
 class ReviewSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
@@ -49,6 +42,15 @@ class ReviewSerializer(serializers.ModelSerializer): # 특정 워크샵 상세�
     class Meta:
         model = Review
         fields = ('id', 'content', 'user', 'created_at', 'updated_at',)
+
+
+class WorkshopApplySerializer(serializers.ModelSerializer):
+    guest = serializers.StringRelatedField()
+    workshop = serializers.StringRelatedField()
+
+    class Meta:
+        model = WorkshopApply
+        fields = ('guest_id', 'guest', 'workshop', 'result', 'created_at',)
 
 
 class WorkshopListSerializer(serializers.ModelSerializer): # 워크샵 전체 목록 조회
@@ -102,10 +104,14 @@ class WorkshopCreateSerializer(serializers.ModelSerializer): # 워크샵 생성,
         fields = ('title', 'content', 'workshop_image', 'category', 'location', 'address', 'amount', 'date', 'max_guest',)
 
 
-class WorkshopLikeSerializer(serializers.ModelSerializer): # 마이페이지 - 좋아요 한 워크샵
+class MypageWorkshopLikeSerializer(serializers.ModelSerializer): # 마이페이지 - 좋아요 한 워크샵
+    location = serializers.SerializerMethodField()
+    def get_location(self, obj):
+        return obj.location.district
     class Meta:
         model = Workshop
-        fields = ( 'pk', 'title', 'workshop_image', 'location', 'address')
+        fields = ( 'pk', 'title', 'workshop_image', 'location', 'address',)
+
 
 
 

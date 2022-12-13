@@ -3,7 +3,7 @@ from users.models import User
 from rest_framework import serializers
 import re
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer 
-from workshops.serializers import HobbySerializer, WorkshopListSerializer, WorkshopApplySerializer, WorkshopLikeSerializer
+from workshops.serializers import HobbySerializer, WorkshopListSerializer, WorkshopApplySerializer, MypageWorkshopLikeSerializer
 
 
 # 회원가입
@@ -72,7 +72,7 @@ class UserListSerializer(serializers.ModelSerializer):
 # 마이페이지
 
 class MypageSerializer(serializers.ModelSerializer): 
-    workshop_likes = WorkshopLikeSerializer(many=True)
+    workshop_likes = MypageWorkshopLikeSerializer(many=True)
     hobby = HobbySerializer(many=True)
     workshop_host = WorkshopListSerializer(many=True)
     workshop_apply_guest = WorkshopApplySerializer(many=True)

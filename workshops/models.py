@@ -20,7 +20,7 @@ class Workshop(models.Model):
     category = models.ForeignKey(Hobby, on_delete=models.CASCADE, related_name='workshop_category')
     host = models.ForeignKey(User, on_delete=models.CASCADE, related_name='workshop_host')
     date = models.DateTimeField()
-    location = models.ForeignKey(Location, on_delete=models.CASCADE)
+    location = models.ForeignKey(Location, on_delete=models.CASCADE, related_name='workshop_location')
     address = models.CharField(max_length=20)
     title = models.CharField(max_length=20)
     content = models.TextField(max_length=500)
