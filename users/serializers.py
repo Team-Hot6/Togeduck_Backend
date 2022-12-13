@@ -58,6 +58,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         token['email'] = user.email 
         # 채팅에서 쓸 user id 저장해줌
         token['user_id'] = user.id
+        token['nickname'] = user.nickname
         return token
 
 # user list view serializer
