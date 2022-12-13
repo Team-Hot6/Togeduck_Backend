@@ -61,13 +61,13 @@ class ChatRoomLogView(APIView):
         except:
             return Response({"msg":"채팅방이 존재하지 않습니다."}, status=status.HTTP_400_BAD_REQUEST)
         
-        # 메세지 읽음 처리
         is_chat_read = RoomMessage.objects.filter(
             ~Q(user=request.user.id) & Q(room=check_chat_room))
 
-        for read in is_chat_read:
-            read.is_read = True
-            read.save()
+        # 메세지 읽음 처리
+        # for read in is_chat_read:
+        #     read.is_read = True
+        #     read.save()
 
         # 채팅 로그 반환
         slz = ChatLogSerializer(check_chat_room)
