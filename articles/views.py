@@ -7,24 +7,51 @@ from rest_framework.generics import get_object_or_404
 from workshops.models import Hobby
 from articles.paginations import article_top10_page, article_total_page
 from rest_framework.generics import ListAPIView
+import json, os
+from pathlib import Path
+# test
+from .articlecron import get_score
 
 # request ex) http://www.naver.com/user/?category=축구/
 
 # 게시글 전체 보기
-class ArticleView(ListAPIView):
+# class ArticleView(ListAPIView):
+#     permission_classes = [permissions.AllowAny]
+#     def get(self, request):
+#         category_id = self.request.GET.get('category')
+#         if category_id:
+#             articles = Article.objects.filter(category=category_id)
+#         else:
+#             articles = Article.objects.all()
+#         serializer = ArticleListSerializer(articles, many=True)
+#         return Response(serializer.data, status=status.HTTP_200_OK)
+
+# 게시글 추천순으로 보기
+class ArticleRecommendView(ListAPIView):
     permission_classes = [permissions.AllowAny]
     def get(self, request):
         category_id = self.request.GET.get('category')
         if category_id:
             articles = Article.objects.filter(category=category_id)
         else:
-            articles = Article.objects.all()
+            articles = Article.objects.all().order_by('-like')
         serializer = ArticleListSerializer(articles, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+# 게시글 최신순으로 보기
+class ArticleLatestView(ListAPIView):
+    permission_classes = [permissions.AllowAny]
+    def get(self, request):
+        category_id = self.request.GET.get('category')
+        if category_id:
+            articles = Article.objects.filter(category=category_id)
+        else:
+            articles = Article.objects.all().order_by('-created_at')
+        serializer = ArticleListSerializer(articles, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 # 페이지네이션 적용 아티클 뷰
-class ArticleView_2(ListAPIView):
+class ArticleView(ListAPIView):
     permission_classes = [permissions.AllowAny]
     
     pagination_class = article_total_page
@@ -32,21 +59,30 @@ class ArticleView_2(ListAPIView):
     queryset = Article.objects.all()
     
     def get(self, request):
-        get_category_value = self.request.GET.get('category')
-        if get_category_value:
-            try:
-                get_hobby = Hobby.objects.get(category=get_category_value)
-            except:
-                return self.get_paginated_response({"msg":"카테고리가 존재하지 않습니다."}, status=status.HTTP_200_OK)
-
-            self.queryset = Article.objects.filter(category=get_hobby.id)
-            pages = self.paginate_queryset(self.get_queryset())
-            slz = self.get_serializer(pages, many=True)
-            return self.get_paginated_response(slz.data, status=status.HTTP_200_OK)
+        get_category_id = self.request.GET.get('category')
+        if get_category_id:
+            self.queryset = Article.objects.filter(category=get_category_id)
         
         pages = self.paginate_queryset(self.get_queryset())
         slz = self.get_serializer(pages, many=True)
-        return self.get_paginated_response(slz.data, status=status.HTTP_200_OK)
+        return self.get_paginated_response(slz.data)
+
+# 인기 게시글 가져오는 view
+class ArticleLankView(APIView):
+    permission_classes = [permissions.AllowAny]
+    
+    def get(self, request):
+        BASE_DIR = Path(__file__).resolve().parent.parent
+        lank_file_path = os.path.join(BASE_DIR, 'Lank.json')
+        
+        with open(lank_file_path, "r") as f:
+            result_lanking = json.load(f)
+        lank_list = result_lanking['result']
+
+        query_list = [Article.objects.get(id=x) for x in lank_list]
+        slz = ArticleListSerializer(query_list, many=True)
+
+        return Response(slz.data, status=status.HTTP_200_OK)
 
 
 # 게시글 작성페이지
@@ -62,7 +98,7 @@ class ArticleCreateView(APIView):
             return Response(serialzier.data, status=status.HTTP_201_CREATED)
         return Response(serialzier.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# 게시글 상세페이지(조회/수정/삭제)
+# 게시글 상세페이지(조회/추천/수정/삭제)
 class ArticleDetailView(APIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     def get(self, request, article_id):
@@ -74,6 +110,15 @@ class ArticleDetailView(APIView):
         serializer = ArticleDetailSerializer(article)
         
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def post(self, request, article_id):
+        article = get_object_or_404(Article, id=article_id)
+        if request.user in article.like.all():
+            article.like.remove(request.user)
+            return Response({"msg":"취소"}, status=status.HTTP_200_OK)
+        else:
+            article.like.add(request.user)
+            return Response({"msg":"추천"}, status=status.HTTP_200_OK)
 
     def put(self, request, article_id):    
         article = get_object_or_404(Article, id=article_id)
@@ -122,3 +167,8 @@ class CommentDeleteView(APIView):
             comment.delete()
             return Response({"msg":"댓글 삭제 완료!"}, status=status.HTTP_200_OK)
         return Response({"msg":"댓글을 삭제할 권한이 없습니다!"}, status=status.HTTP_403_FORBIDDEN)
+
+class TestView(APIView):
+    def get(self, request):
+        get_score()
+        return Response('')

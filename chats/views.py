@@ -29,6 +29,7 @@ class ChatListView(APIView):
         return Response('', status=status.HTTP_200_OK)
     
     # 채팅방 생성하기
+    # 채팅방 생성하면서 띄워주고 채팅까지 연결해주는 로직 생성 필요
     def post(self, request):
         sender_id = request.user.id
         receiver_id = request.data['user_id']
@@ -108,7 +109,7 @@ class UserListView(APIView):
 
             # 되는거 related name 사용
             # ex ) (객체).(related_name).all()
-            test2 = test_user.chatroom_sender.all()
+            # test2 = test_user.chatroom_sender.all()
 
             # 되는거 related name 없이 _set 사용
             # ex) (객체).(모델_set).all() # 대소문자 구분 없음
@@ -135,8 +136,10 @@ class UserListView(APIView):
             message_list = RoomMessage.objects.filter(room__in=room_id_list).order_by('created_at')
 
             message_dict = {}
+            exist_message_room_id_dict = {}
 
             for message_obj in message_list:
+                exist_message_room_id_dict[message_obj.room.id] = 1
                 message_dict[message_obj.room.id] = message_obj.created_at
             
             # user 상대방 방별로 정렬 완료
@@ -150,6 +153,14 @@ class UserListView(APIView):
                     temp.append(User.objects.get(id=chatroom_obj.receiver.id))
                 else:
                     temp.append(User.objects.get(id=chatroom_obj.sender.id))
+            
+            for i in room_list:
+                if i.id not in exist_message_room_id_dict:
+                    chatroom_obj = ChatRoom.objects.get(id=i.id)
+                    if cur_user_id == chatroom_obj.sender.id:
+                        temp.append(User.objects.get(id=chatroom_obj.receiver.id))
+                    else:
+                        temp.append(User.objects.get(id=chatroom_obj.sender.id))
             
             slz = UserListSerializer(temp, many=True)
             return Response(slz.data, status=status.HTTP_200_OK)
