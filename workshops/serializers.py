@@ -50,6 +50,10 @@ class WorkshopListSerializer(serializers.ModelSerializer): # 워크샵 전체 �
     location = serializers.SerializerMethodField()
     date = serializers.SerializerMethodField()
     cur_time = serializers.SerializerMethodField()
+    likes_count = serializers.SerializerMethodField()
+
+    def get_likes_count(self, obj):
+        return obj.likes.count()
 
     def get_category(self, obj):
         return obj.category.category
@@ -68,7 +72,7 @@ class WorkshopListSerializer(serializers.ModelSerializer): # 워크샵 전체 �
 
     class Meta:
         model = Workshop
-        fields = ('id', 'title', 'workshop_image', 'category', 'location', 'date', 'cur_time',)
+        fields = ('id', 'title', 'workshop_image', 'category', 'location', 'date', 'cur_time', 'likes_count',)
 
 
 class WorkshopSerializer(serializers.ModelSerializer): # 특정 워크샵 상세 조회
