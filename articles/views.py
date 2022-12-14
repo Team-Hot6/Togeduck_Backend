@@ -104,6 +104,8 @@ class CommentView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     def post(self, request, article_id):
+        if not request.user.is_authenticated:
+            return Response({"msg":"로그인 된 사용자만 댓글을 작성할 수 있습니다!"}, status=status.HTTP_401_UNAUTHORIZED)
         serializer = CommentCreateSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(article_id=article_id, user=request.user)
