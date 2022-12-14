@@ -77,7 +77,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
 class CreateRoom(AsyncWebsocketConsumer):
     # django channels authentication 로그인 관련한 인증 기능 추가해야 함
     async def connect(self):
-
         self.room_name = self.scope["url_route"]["kwargs"]["room_id"]
         self.room_group_name = "chat_%s" % self.room_name
         

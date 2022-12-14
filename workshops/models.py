@@ -1,5 +1,6 @@
 from django.db import models
 from users.models import User
+from .utils import rename_imagefile_to_uuid
 
 
 class Hobby(models.Model):
@@ -20,11 +21,11 @@ class Workshop(models.Model):
     category = models.ForeignKey(Hobby, on_delete=models.CASCADE, related_name='workshop_category')
     host = models.ForeignKey(User, on_delete=models.CASCADE, related_name='workshop_host')
     date = models.DateTimeField()
-    location = models.ForeignKey(Location, on_delete=models.CASCADE)
+    location = models.ForeignKey(Location, on_delete=models.CASCADE, related_name='workshop_location')
     address = models.CharField(max_length=20)
     title = models.CharField(max_length=20)
     content = models.TextField(max_length=500)
-    workshop_image = models.ImageField(upload_to='workshop/')
+    workshop_image = models.ImageField(upload_to=rename_imagefile_to_uuid)
     max_guest = models.IntegerField()
     amount = models.DecimalField(decimal_places=0, max_digits=10000000000000000)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -40,8 +41,8 @@ class WorkshopApply(models.Model):
     ('승인', '승인'),
     ('거절', '거절'),
     ('대기', '대기'))
-    workshop = models.ForeignKey(Workshop, on_delete=models.CASCADE)
-    guest = models.ForeignKey(User, on_delete=models.CASCADE) 
+    workshop = models.ForeignKey(Workshop, on_delete=models.CASCADE, related_name='workshop_apply')
+    guest = models.ForeignKey(User, on_delete=models.CASCADE, related_name='workshop_apply_guest') 
     result = models.CharField("신청 유형", choices=CHOISE_TYPE, null=True, max_length=3)
     created_at = models.DateTimeField(auto_now_add=True)
 
