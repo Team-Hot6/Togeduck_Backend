@@ -30,9 +30,29 @@ class ChatListView(APIView):
     
     # 채팅방 생성하기
     # 채팅방 생성하면서 띄워주고 채팅까지 연결해주는 로직 생성 필요
+    # def post(self, request):
+    #     sender_id = request.user.id
+    #     receiver_id = request.data['user_id']
+
+    #     sender = request.user
+    #     receiver = User.objects.get(id=receiver_id)
+
+    #     # 서로의 채팅방이 있는지 확인 함
+    #     get_exist_room = ChatRoom.objects.filter(
+    #         Q(sender=sender_id, receiver=receiver_id) | Q(sender=receiver_id, receiver=sender_id))
+
+    #     # 채팅룸이 없으면 생성해서 반환해줌
+    #     if not get_exist_room:
+    #         new_room = ChatRoom.objects.create(sender=sender, receiver=receiver)
+    #         return Response(new_room.id, status=status.HTTP_200_OK)
+        
+    #     # 존재하는 채팅방 id 반환
+    #     return Response(get_exist_room[0].id, status=status.HTTP_200_OK)
     def post(self, request):
         sender_id = request.user.id
         receiver_id = request.data['user_id']
+        print(request.data)
+        opp_user_email = User.objects.get(id=receiver_id)
 
         sender = request.user
         receiver = User.objects.get(id=receiver_id)
