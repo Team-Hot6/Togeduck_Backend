@@ -50,7 +50,6 @@ class ArticleLatestView(ListAPIView):
         serializer = ArticleListSerializer(articles, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-
 # 페이지네이션 적용 아티클 뷰
 class ArticleView(ListAPIView):
     permission_classes = [permissions.AllowAny]
