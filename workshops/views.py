@@ -2,8 +2,8 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
-from workshops.models import Workshop, Review, WorkshopApply, Hobby
-from workshops.serializers import ReviewSerializer,ReviewCreateSerializer, WorkshopSerializer, WorkshopListSerializer, WorkshopCreateSerializer, HobbySerializer
+from workshops.models import Workshop, Review, WorkshopApply, Hobby, Location
+from workshops.serializers import ReviewSerializer,ReviewCreateSerializer, WorkshopSerializer, WorkshopListSerializer, WorkshopCreateSerializer, HobbySerializer, LocationSerializer
 from rest_framework import permissions
 from workshops.paginations import workshop_page
 from rest_framework.generics import ListAPIView
@@ -53,9 +53,15 @@ class WorkshopView(ListAPIView):
     
     def get(self, request):
         category_id = self.request.GET.get('category')
+        sort_id = self.request.GET.get('sort')
 
         if category_id:
             self.queryset = Workshop.objects.filter(category=category_id).order_by('-created_at')
+
+        elif category_id and sort_id == 1 :
+            category_workshops = Workshop.objects.filter(category=category_id)
+            workshops = Workshop.objects.annotate(like_count=Count('likes')).order_by('-like_count')
+            self.queryset = workshops            
 
         pages = self.paginate_queryset(self.get_queryset())
         slz = self.get_serializer(pages, many=True)
@@ -138,8 +144,15 @@ class LikeView(APIView):
 
 class HobbyView(APIView): # 취미 카테고리
     def get(self, request):
-        workshops = Hobby.objects.all()
-        serializer = HobbySerializer(workshops, many=True)
+        hobbys = Hobby.objects.all()
+        serializer = HobbySerializer(hobbys, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class LocationView(APIView): # 지역 카테고리
+    def get(self, request):
+        Locations = Location.objects.all()
+        serializer = LocationSerializer(Locations, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
