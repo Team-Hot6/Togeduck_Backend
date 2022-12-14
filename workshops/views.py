@@ -53,15 +53,9 @@ class WorkshopView(ListAPIView):
     
     def get(self, request):
         category_id = self.request.GET.get('category')
-        sort_id = self.request.GET.get('sort')
-
+        
         if category_id:
-            self.queryset = Workshop.objects.filter(category=category_id).order_by('-created_at')
-
-        elif category_id and sort_id == 1 :
-            category_workshops = Workshop.objects.filter(category=category_id)
-            workshops = Workshop.objects.annotate(like_count=Count('likes')).order_by('-like_count')
-            self.queryset = workshops            
+            self.queryset = Workshop.objects.filter(category=category_id).order_by('-created_at')    
 
         pages = self.paginate_queryset(self.get_queryset())
         slz = self.get_serializer(pages, many=True)
