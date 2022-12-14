@@ -22,6 +22,30 @@ class ArticleView(ListAPIView):
         serializer = ArticleListSerializer(articles, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+# 게시글 추천순으로 보기
+class ArticleRecommendView(ListAPIView):
+    permission_classes = [permissions.AllowAny]
+    def get(self, request):
+        category_id = self.request.GET.get('category')
+        if category_id:
+            articles = Article.objects.filter(category=category_id)
+        else:
+            articles = Article.objects.all().order_by('-like')
+        serializer = ArticleListSerializer(articles, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+# 게시글 최신순으로 보기
+class ArticleLatestView(ListAPIView):
+    permission_classes = [permissions.AllowAny]
+    def get(self, request):
+        category_id = self.request.GET.get('category')
+        if category_id:
+            articles = Article.objects.filter(category=category_id)
+        else:
+            articles = Article.objects.all().order_by('-created_at')
+        serializer = ArticleListSerializer(articles, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 # 페이지네이션 적용 아티클 뷰
 class ArticleView_2(ListAPIView):
@@ -79,10 +103,10 @@ class ArticleDetailView(APIView):
         article = get_object_or_404(Article, id=article_id)
         if request.user in article.like.all():
             article.like.remove(request.user)
-            return Response({"msg":"취소!"}, status=status.HTTP_200_OK)
+            return Response({"msg":"취소"}, status=status.HTTP_200_OK)
         else:
             article.like.add(request.user)
-            return Response({"msg":"추천!"}, status=status.HTTP_200_OK)
+            return Response({"msg":"추천"}, status=status.HTTP_200_OK)
 
     def put(self, request, article_id):    
         article = get_object_or_404(Article, id=article_id)
