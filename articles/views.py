@@ -15,20 +15,20 @@ from .articlecron import get_score
 # request ex) http://www.naver.com/user/?category=축구/
 
 # 게시글 전체 보기
-class ArticleView(ListAPIView):
-    permission_classes = [permissions.AllowAny]
-    def get(self, request):
-        category_id = self.request.GET.get('category')
-        if category_id:
-            articles = Article.objects.filter(category=category_id)
-        else:
-            articles = Article.objects.all()
-        serializer = ArticleListSerializer(articles, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+# class ArticleView(ListAPIView):
+#     permission_classes = [permissions.AllowAny]
+#     def get(self, request):
+#         category_id = self.request.GET.get('category')
+#         if category_id:
+#             articles = Article.objects.filter(category=category_id)
+#         else:
+#             articles = Article.objects.all()
+#         serializer = ArticleListSerializer(articles, many=True)
+#         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 # 페이지네이션 적용 아티클 뷰
-class ArticleView_2(ListAPIView):
+class ArticleView(ListAPIView):
     permission_classes = [permissions.AllowAny]
     
     pagination_class = article_total_page
@@ -36,17 +36,9 @@ class ArticleView_2(ListAPIView):
     queryset = Article.objects.all()
     
     def get(self, request):
-        get_category_value = self.request.GET.get('category')
-        if get_category_value:
-            try:
-                get_hobby = Hobby.objects.get(category=get_category_value)
-            except:
-                return self.get_paginated_response({"msg":"카테고리가 존재하지 않습니다."}, status=status.HTTP_200_OK)
-
-            self.queryset = Article.objects.filter(category=get_hobby.id)
-            pages = self.paginate_queryset(self.get_queryset())
-            slz = self.get_serializer(pages, many=True)
-            return self.get_paginated_response(slz.data)
+        get_category_id = self.request.GET.get('category')
+        if get_category_id:
+            self.queryset = Article.objects.filter(category=get_category_id)
         
         pages = self.paginate_queryset(self.get_queryset())
         slz = self.get_serializer(pages, many=True)
