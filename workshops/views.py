@@ -7,6 +7,7 @@ from workshops.serializers import ReviewSerializer,ReviewCreateSerializer, Works
 from rest_framework import permissions
 from workshops.paginations import workshop_page
 from rest_framework.generics import ListAPIView
+from django.db.models import Count
 
 
 class ReviewView(APIView): # 리뷰 보기/작성
@@ -143,4 +144,11 @@ class HobbyView(APIView): # 취미 카테고리
     def get(self, request):
         workshops = Hobby.objects.all()
         serializer = HobbySerializer(workshops, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class WorkshopPopularView(APIView):
+    def get(self, request):
+        popular_workshop = Workshop.objects.annotate(like_count=Count('likes')).order_by('-like_count', '-created_at')[:7]
+        serializer = WorkshopListSerializer(popular_workshop, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
