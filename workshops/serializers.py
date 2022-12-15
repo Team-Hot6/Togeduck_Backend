@@ -60,10 +60,6 @@ class WorkshopListSerializer(serializers.ModelSerializer): # 워크샵 전체 �
     workshop_apply = WorkshopApplySerializer(many=True)
     date = serializers.SerializerMethodField()
     cur_time = serializers.SerializerMethodField()
-    likes_count = serializers.SerializerMethodField()
-
-    def get_likes_count(self, obj):
-        return obj.likes.count()
 
     def get_category(self, obj):
         return obj.category.category
@@ -82,7 +78,7 @@ class WorkshopListSerializer(serializers.ModelSerializer): # 워크샵 전체 �
 
     class Meta:
         model = Workshop
-        fields = ('id','title', 'content', 'workshop_image', 'category', 'location', 'date', 'max_guest', 'workshop_apply', 'cur_time')
+        fields = ('id','title', 'content', 'workshop_image', 'category', 'location', 'date', 'max_guest', 'workshop_apply', 'cur_time', 'views',)
 
 
 class WorkshopSerializer(serializers.ModelSerializer): # 특정 워크샵 상세 조회
@@ -111,7 +107,7 @@ class WorkshopSerializer(serializers.ModelSerializer): # 특정 워크샵 상세
 
     class Meta:
         model = Workshop
-        fields = ('pk', 'title', 'content', 'workshop_image', 'category', 'location', 'address', 'host', 'host_id', 'amount', 'date', 'created_at', 'max_guest', 'participant_count', 'likes_count', 'review_workshop', 'workshop_apply')
+        fields = ('pk', 'title', 'content', 'workshop_image', 'category', 'location', 'address', 'host', 'host_id', 'amount', 'date', 'created_at', 'max_guest', 'participant_count', 'likes_count', 'review_workshop', 'workshop_apply', 'views',)
 
 
 class WorkshopCreateSerializer(serializers.ModelSerializer): # 워크샵 생성, 수정

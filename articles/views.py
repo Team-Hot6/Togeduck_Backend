@@ -12,20 +12,6 @@ from pathlib import Path
 # test
 from .articlecron import get_score
 
-# request ex) http://www.naver.com/user/?category=축구/
-
-# 게시글 전체 보기
-# class ArticleView(ListAPIView):
-#     permission_classes = [permissions.AllowAny]
-#     def get(self, request):
-#         category_id = self.request.GET.get('category')
-#         if category_id:
-#             articles = Article.objects.filter(category=category_id)
-#         else:
-#             articles = Article.objects.all()
-#         serializer = ArticleListSerializer(articles, many=True)
-#         return Response(serializer.data, status=status.HTTP_200_OK)
-
 # 게시글 추천순으로 보기
 class ArticleRecommendView(ListAPIView):
     permission_classes = [permissions.AllowAny]
@@ -77,7 +63,7 @@ class ArticleLankView(APIView):
         
         with open(lank_file_path, "r") as f:
             result_lanking = json.load(f)
-        lank_list = result_lanking['result']
+        lank_list = result_lanking['result_article_lank']
 
         query_list = [Article.objects.get(id=x) for x in lank_list]
         slz = ArticleListSerializer(query_list, many=True)
@@ -103,10 +89,8 @@ class ArticleDetailView(APIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     def get(self, request, article_id):
         article = get_object_or_404(Article, id=article_id)
-        
         article.views += 1
         article.save()
-        
         serializer = ArticleDetailSerializer(article)
         
         return Response(serializer.data, status=status.HTTP_200_OK)
