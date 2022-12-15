@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from .models import Article
+from .models import Workshop
 from django.db.models import Q
 import os, json
 from pathlib import Path
@@ -16,7 +16,7 @@ def get_score():
     def score(obj) -> int:
         result = 1
         result += category_score_dict[obj.category.id]
-        result += obj.like.count() * like_multiple
+        result += obj.likes.count() * like_multiple
         result += obj.views * view_multiple
 
         hour_diff_sec = (current_time - obj.created_at).total_seconds() / 3600
@@ -27,23 +27,23 @@ def get_score():
         print(hour_diff_sec)
         return result * (10 - (time_multiple * hour_diff_sec))
 
-    article_obj = Article.objects.filter(
+    article_obj = Workshop.objects.filter(
         Q(created_at__gte=(datetime.now() - timedelta(days=2))) 
         &
         Q(updated_at__gte=(datetime.now() - timedelta(days=2))))
 
-    article_score_id_list = [(x, score(x)) for x in article_obj]
+    workshop_score_id_list = [(x, score(x)) for x in article_obj]
 
-    article_score_id_list.sort(key=lambda x:x[1], reverse=True)
+    workshop_score_id_list.sort(key=lambda x:x[1], reverse=True)
 
-    print(article_score_id_list)
+    print(workshop_score_id_list)
 
     result = {}
 
-    # result_id = [article_score_id_list[x][0].id for x in range(len(article_score_id_list))]
-    result_id = [article_score_id_list[x][0].id for x in range(11)]
+    # result_id = [workshop_score_id_list[x][0].id for x in range(len(workshop_score_id_list))]
+    result_id = [workshop_score_id_list[x][0].id for x in range(8)]
 
-    result['result_article_lank'] = result_id
+    result['result_workshop_lank'] = result_id
 
     BASE_DIR = Path(__file__).resolve().parent.parent
     lank_file_path = os.path.join(BASE_DIR, 'Lank.json')
