@@ -1,7 +1,17 @@
 {
-    "result": [
+    "result_article_lank": [
+        1,
         3,
         2,
-        1
+        16,
+        15,
+        14,
+        13,
+        12,
+        11,
+        10
+    ],
+    "result_workshop_lank": [
+        5
     ]
 }
