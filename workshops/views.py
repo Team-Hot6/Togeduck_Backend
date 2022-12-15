@@ -10,7 +10,6 @@ from rest_framework.generics import ListAPIView
 from django.db.models import Count
 import json, os
 from pathlib import Path
-from .workshopcron import get_score
 
 
 class ReviewView(APIView): # 리뷰 보기/작성
@@ -85,8 +84,13 @@ class WorkshopLankView(APIView):
         with open(lank_file_path, "r") as f:
             result_lanking = json.load(f)
         lank_list = result_lanking['result_workshop_lank']
+        print(lank_list, '########')
+
+        if not lank_list:
+            return Response({"msg": "데이터가 없습니다"}, status=status.HTTP_200_OK)
 
         query_list = [Workshop.objects.get(id=x) for x in lank_list]
+        print(query_list, '@@@@@@@@@@@')
         slz = WorkshopListSerializer(query_list, many=True)
 
         return Response(slz.data, status=status.HTTP_200_OK)
@@ -179,9 +183,3 @@ class WorkshopPopularView(APIView):
         popular_workshop = Workshop.objects.annotate(like_count=Count('likes')).order_by('-like_count', '-created_at')[:7]
         serializer = WorkshopListSerializer(popular_workshop, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-class test(APIView):
-    def get(self, request):
-        get_score()
-        return Response('', status=status.HTTP_200_OK)

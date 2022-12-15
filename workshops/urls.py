@@ -13,5 +13,4 @@ urlpatterns = [
     path('hobby/', views.HobbyView.as_view(), name='hobby_view'),
     path('popular/', views.WorkshopPopularView.as_view(), name='workshop_popular_view'),
     path('location/', views.LocationView.as_view(), name='location_view'),
-    path('test/', views.test.as_view(), name='workshop_lank_view'),
 ]
