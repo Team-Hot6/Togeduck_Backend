@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
 from workshops.models import Workshop, Review, WorkshopApply, Hobby, Location
-from workshops.serializers import ReviewSerializer,ReviewCreateSerializer, WorkshopSerializer, WorkshopListSerializer, WorkshopCreateSerializer, HobbySerializer, LocationSerializer
+from workshops.serializers import ReviewSerializer,ReviewCreateSerializer, WorkshopSerializer, WorkshopListSerializer, WorkshopCreateSerializer, HobbySerializer, LocationSerializer, WorkshopApplySerializer
 from rest_framework import permissions
 from workshops.paginations import workshop_page
 from rest_framework.generics import ListAPIView
@@ -57,7 +57,7 @@ class WorkshopView(ListAPIView):
         category_id = self.request.GET.get('category')
 
         if category_id:
-            self.queryset = Workshop.objects.filter(category=category_id).order_by('-created_at')    
+            self.queryset = Workshop.objects.filter(category=category_id).order_by('-created_at')
 
         pages = self.paginate_queryset(self.get_queryset())
         slz = self.get_serializer(pages, many=True)
@@ -84,13 +84,11 @@ class WorkshopLankView(APIView):
         with open(lank_file_path, "r") as f:
             result_lanking = json.load(f)
         lank_list = result_lanking['result_workshop_lank']
-        print(lank_list, '########')
 
         if not lank_list:
             return Response({"msg": "데이터가 없습니다"}, status=status.HTTP_200_OK)
 
         query_list = [Workshop.objects.get(id=x) for x in lank_list]
-        print(query_list, '@@@@@@@@@@@')
         slz = WorkshopListSerializer(query_list, many=True)
 
         return Response(slz.data, status=status.HTTP_200_OK)
@@ -127,6 +125,19 @@ class WorkshopDetailView(APIView):
 
 
 class ApplyView(APIView):
+    def get(self, request, workshop_id): # 워크샵 신청 관리 페이지 조회 (승인/거절)
+        workshop = get_object_or_404(Workshop, id=workshop_id)
+        if request.user == workshop.host:
+            workshop_apply = WorkshopApply.objects.filter(workshop=workshop_id)
+            if not workshop_apply:
+                serializer = WorkshopSerializer(workshop)
+            else:
+                serializer = WorkshopApplySerializer(workshop_apply, many=True)
+            
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response({"msg":"권한이 없습니다."}, status=status.HTTP_403_FORBIDDEN)
+
     def post(self, request, workshop_id): # 워크샵 신청
         workshop = get_object_or_404(Workshop, id=workshop_id)
         if request.user != workshop.host: 
