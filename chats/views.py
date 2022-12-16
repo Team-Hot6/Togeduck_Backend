@@ -8,6 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 from users.models import User
 from users.serializers import UserListSerializer
 from itertools import chain
+import json
 # Create your views here.
 
 class ChatListView(APIView):
@@ -29,33 +30,14 @@ class ChatListView(APIView):
         return Response('', status=status.HTTP_200_OK)
     
     # 채팅방 생성하기
-    # 채팅방 생성하면서 띄워주고 채팅까지 연결해주는 로직 생성 필요
-    # def post(self, request):
-    #     sender_id = request.user.id
-    #     receiver_id = request.data['user_id']
-
-    #     sender = request.user
-    #     receiver = User.objects.get(id=receiver_id)
-
-    #     # 서로의 채팅방이 있는지 확인 함
-    #     get_exist_room = ChatRoom.objects.filter(
-    #         Q(sender=sender_id, receiver=receiver_id) | Q(sender=receiver_id, receiver=sender_id))
-
-    #     # 채팅룸이 없으면 생성해서 반환해줌
-    #     if not get_exist_room:
-    #         new_room = ChatRoom.objects.create(sender=sender, receiver=receiver)
-    #         return Response(new_room.id, status=status.HTTP_200_OK)
-        
-    #     # 존재하는 채팅방 id 반환
-    #     return Response(get_exist_room[0].id, status=status.HTTP_200_OK)
     def post(self, request):
         sender_id = request.user.id
         receiver_id = request.data['user_id']
-        print(request.data)
-        opp_user_email = User.objects.get(id=receiver_id)
 
         sender = request.user
         receiver = User.objects.get(id=receiver_id)
+
+        json_data = {}
 
         # 서로의 채팅방이 있는지 확인 함
         get_exist_room = ChatRoom.objects.filter(
@@ -64,10 +46,20 @@ class ChatListView(APIView):
         # 채팅룸이 없으면 생성해서 반환해줌
         if not get_exist_room:
             new_room = ChatRoom.objects.create(sender=sender, receiver=receiver)
-            return Response(new_room.id, status=status.HTTP_200_OK)
+            json_data['room_id'] = new_room.id
+            json_data['opp_email'] = receiver.email
+            return Response(json_data, status=status.HTTP_200_OK)
         
-        # 존재하는 채팅방 id 반환
-        return Response(get_exist_room[0].id, status=status.HTTP_200_OK)
+        json_data['room_id'] = get_exist_room[0].id
+
+        # 채팅방의 sender와 현재 유저가 같다면
+        if get_exist_room[0].sender_id == sender_id:
+            opp_user = User.objects.get(id=get_exist_room[0].receiver_id)
+            json_data['opp_email'] = opp_user.email
+        else:
+            opp_user = User.objects.get(id=get_exist_room[0].sender_id)
+            json_data['opp_email'] = opp_user.email
+        return Response(json_data, status=status.HTTP_200_OK)
 
 # 개별 채팅방 관리
 class ChatRoomLogView(APIView):
