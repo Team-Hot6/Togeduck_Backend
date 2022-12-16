@@ -15,7 +15,7 @@ class ArticleListSerializer(serializers.ModelSerializer):
         return obj.like.count()
 
     def get_time(self, obj):
-        time = obj.created_at.strftime('%I:%M')
+        time = obj.created_at.strftime('%H:%M')
         return time
     
     def get_date(self, obj):
@@ -61,7 +61,7 @@ class ArticleDetailSerializer(serializers.ModelSerializer):
         return obj.like.count()
     
     def get_time(self, obj):
-        time = obj.created_at.strftime('%I:%M')
+        time = obj.created_at.strftime('%H:%M')
         return time
     
     def get_date(self, obj):
