@@ -1,6 +1,12 @@
 {
-    "result": [
-        3,
-        2
+    "result_article_lank": [
+        5,
+        4
+    ],
+    "result_workshop_lank": [
+        43,
+        46,
+        45,
+        41
     ]
 }

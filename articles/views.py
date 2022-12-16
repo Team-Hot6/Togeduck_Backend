@@ -9,46 +9,11 @@ from articles.paginations import article_top10_page, article_total_page
 from rest_framework.generics import ListAPIView
 import json, os
 from pathlib import Path
+from django.db.models import Count
 # test
 from .articlecron import get_score
+from django.db.models import Count
 
-# request ex) http://www.naver.com/user/?category=축구/
-
-# 게시글 전체 보기
-# class ArticleView(ListAPIView):
-#     permission_classes = [permissions.AllowAny]
-#     def get(self, request):
-#         category_id = self.request.GET.get('category')
-#         if category_id:
-#             articles = Article.objects.filter(category=category_id)
-#         else:
-#             articles = Article.objects.all()
-#         serializer = ArticleListSerializer(articles, many=True)
-#         return Response(serializer.data, status=status.HTTP_200_OK)
-
-# 게시글 추천순으로 보기
-class ArticleRecommendView(ListAPIView):
-    permission_classes = [permissions.AllowAny]
-    def get(self, request):
-        category_id = self.request.GET.get('category')
-        if category_id:
-            articles = Article.objects.filter(category=category_id)
-        else:
-            articles = Article.objects.all().order_by('-like')
-        serializer = ArticleListSerializer(articles, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-# 게시글 최신순으로 보기
-class ArticleLatestView(ListAPIView):
-    permission_classes = [permissions.AllowAny]
-    def get(self, request):
-        category_id = self.request.GET.get('category')
-        if category_id:
-            articles = Article.objects.filter(category=category_id)
-        else:
-            articles = Article.objects.all().order_by('-created_at')
-        serializer = ArticleListSerializer(articles, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
 
 # 페이지네이션 적용 아티클 뷰
 class ArticleView(ListAPIView):
@@ -60,9 +25,26 @@ class ArticleView(ListAPIView):
     
     def get(self, request):
         get_category_id = self.request.GET.get('category')
-        if get_category_id:
+        sort = self.request.GET.get('sort')
+
+        # category & sort 둘 다 있는 경우
+        if get_category_id and sort:
+            if sort == 'latest':
+                self.queryset = Article.objects.filter(category=get_category_id).order_by('-created_at')
+            elif sort == 'like':
+                self.queryset = Article.objects.filter(category=get_category_id).annotate(like_count=Count('like')).order_by('-like_count', '-created_at')
+        
+        # category만 있는 경우
+        if get_category_id and not sort:
             self.queryset = Article.objects.filter(category=get_category_id)
         
+        # sort만 있는 경우
+        if sort and not get_category_id:
+            if sort == 'latest':
+                self.queryset = Article.objects.all().order_by('-created_at')
+            elif sort == 'like':
+                self.queryset = Article.objects.annotate(like_count=Count('like').order_by('-like_count', '-created_at'))
+
         pages = self.paginate_queryset(self.get_queryset())
         slz = self.get_serializer(pages, many=True)
         return self.get_paginated_response(slz.data)
@@ -77,9 +59,21 @@ class ArticleLankView(APIView):
         
         with open(lank_file_path, "r") as f:
             result_lanking = json.load(f)
-        lank_list = result_lanking['result']
+        lank_list = result_lanking['result_article_lank']
 
-        query_list = [Article.objects.get(id=x) for x in lank_list]
+        query_list = []
+        for idx in lank_list:
+            try:
+                obj = Article.objects.get(id=idx)
+                query_list.append(obj)
+            except:
+                continue
+
+        if not query_list:
+            obj = Article.objects.annotate(like_count=Count('like')).order_by('-like_count', '-created_at')[0:10]
+            slz = ArticleListSerializer(obj, many=True)
+            return Response(slz.data, status=status.HTTP_200_OK)
+            
         slz = ArticleListSerializer(query_list, many=True)
 
         return Response(slz.data, status=status.HTTP_200_OK)
@@ -103,10 +97,12 @@ class ArticleDetailView(APIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     def get(self, request, article_id):
         article = get_object_or_404(Article, id=article_id)
-        
+        print(request.session)
+
+        # views_cookie = request.session['user_id']
+        # cookie_name = f'hits_views:{views_cookie}'
         article.views += 1
         article.save()
-        
         serializer = ArticleDetailSerializer(article)
         
         return Response(serializer.data, status=status.HTTP_200_OK)
