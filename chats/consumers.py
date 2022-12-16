@@ -5,7 +5,7 @@ from users.models import User
 from channels.db import database_sync_to_async
 from datetime import datetime
 
-# 테스트 코드
+# test code
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         # 로그인된 사용자인지 확인
@@ -103,6 +103,8 @@ class CreateRoom(AsyncWebsocketConsumer):
         room_object = await self.get_chatroom_db(room_id)
         user_email = await self.get_user_email(sender_id)
 
+        sender_profile_image = sender.profile_image
+
         if not sender:
             print('Sender user가 조회되지 않습니다.')
         if not message:
@@ -124,7 +126,8 @@ class CreateRoom(AsyncWebsocketConsumer):
             'room_id': room_id,
             'cur_time': cur_time,
             'date': date,
-            'user': user_email
+            'user': user_email,
+            'profile_image': f'{sender_profile_image}'
             }
         
         await self.channel_layer.group_send(
@@ -145,6 +148,7 @@ class CreateRoom(AsyncWebsocketConsumer):
         date = message_data['date']
         room_id = message_data['room_id']
         user = message_data['user']
+        profile_image = message_data['profile_image']
 
         # Send message to WebSocket
         await self.send(text_data=json.dumps({
@@ -153,7 +157,8 @@ class CreateRoom(AsyncWebsocketConsumer):
             "cur_time": cur_time,
             "date": date,
             "room_id": room_id,
-            'user': user
+            'user': user,
+            'profile_image': profile_image
             }))
 
     @database_sync_to_async
