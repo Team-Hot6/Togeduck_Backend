@@ -46,13 +46,15 @@ class ReviewSerializer(serializers.ModelSerializer): # 특정 워크샵 상세�
   
 
 class WorkshopApplySerializer(serializers.ModelSerializer):
-    guest = serializers.StringRelatedField()
+    guest_nickname = serializers.SerializerMethodField()
     workshop = serializers.StringRelatedField()
+
+    def get_guest_nickname(self, obj):
+        return obj.guest.nickname
 
     class Meta:
         model = WorkshopApply
-        fields = ('guest_id', 'guest', 'workshop', 'result', 'created_at',)
-
+        fields = ('id', 'guest', 'guest_nickname', 'workshop', 'result', 'created_at',)
 
 class WorkshopListSerializer(serializers.ModelSerializer): # 워크샵 전체 목록 조회
     category = serializers.SerializerMethodField()

@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
 from workshops.models import Workshop, Review, WorkshopApply, Hobby, Location
-from workshops.serializers import ReviewSerializer,ReviewCreateSerializer, WorkshopSerializer, WorkshopListSerializer, WorkshopCreateSerializer, HobbySerializer, LocationSerializer
+from workshops.serializers import ReviewSerializer,ReviewCreateSerializer, WorkshopSerializer, WorkshopListSerializer, WorkshopCreateSerializer, HobbySerializer, LocationSerializer, WorkshopApplySerializer
 from rest_framework import permissions
 from workshops.paginations import workshop_page
 from rest_framework.generics import ListAPIView
@@ -55,6 +55,7 @@ class WorkshopView(ListAPIView):
     
     def get(self, request):
         category_id = self.request.GET.get('category')
+
         sort = self.request.GET.get('sort')
 
         # sort와 category string이 둘 다 있을때
@@ -100,6 +101,7 @@ class WorkshopLankView(APIView):
         with open(lank_file_path, "r") as f:
             result_lanking = json.load(f)
         lank_list = result_lanking['result_workshop_lank']
+
         query_list = []
 
         for idx in lank_list:
@@ -150,6 +152,19 @@ class WorkshopDetailView(APIView):
 
 
 class ApplyView(APIView):
+    def get(self, request, workshop_id): # 워크샵 신청 관리 페이지 조회 (승인/거절)
+        workshop = get_object_or_404(Workshop, id=workshop_id)
+        if request.user == workshop.host:
+            workshop_apply = WorkshopApply.objects.filter(workshop=workshop_id)
+            if not workshop_apply:
+                serializer = WorkshopSerializer(workshop)
+            else:
+                serializer = WorkshopApplySerializer(workshop_apply, many=True)
+            
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response({"msg":"권한이 없습니다."}, status=status.HTTP_403_FORBIDDEN)
+
     def post(self, request, workshop_id): # 워크샵 신청
         workshop = get_object_or_404(Workshop, id=workshop_id)
         if request.user != workshop.host: 
