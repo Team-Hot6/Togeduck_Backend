@@ -9,7 +9,7 @@ class Article(models.Model):
     category = models.ForeignKey(Hobby, on_delete=models.CASCADE, related_name='article_category')
     title = models.CharField(max_length=500)
     content = models.TextField()
-    article_image = models.ImageField(upload_to=rename_imagefile_to_uuid, blank=True, null=True)
+    article_image = models.ImageField(upload_to=rename_imagefile_to_uuid, default='article/together_logo.PNG', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     like = models.ManyToManyField(User, blank=True, related_name='article_like')
