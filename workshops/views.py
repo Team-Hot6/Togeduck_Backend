@@ -53,7 +53,7 @@ class WorkshopView(ListAPIView):
     
     def get(self, request):
         category_id = self.request.GET.get('category')
-        
+
         if category_id:
             self.queryset = Workshop.objects.filter(category=category_id).order_by('-created_at')    
 
