@@ -1,14 +1,19 @@
 from rest_framework import serializers
 from chats.models import ChatRoom, RoomMessage
 from users.models import User
+from users.serializers import UserListSerializer
 
 class RoomMessageSerializer(serializers.ModelSerializer):
     cur_time = serializers.SerializerMethodField()
     user = serializers.SerializerMethodField()
     date = serializers.SerializerMethodField()
+    user_profile = serializers.SerializerMethodField()
 
     def get_user(self, obj):
         return obj.user.email
+    
+    def get_user_profile(self, obj):
+        return f'{obj.user.profile_image}'
 
     def get_cur_time(self, obj):
         ampm = obj.created_at.strftime('%p')
@@ -26,6 +31,7 @@ class RoomMessageSerializer(serializers.ModelSerializer):
 class ChatLogSerializer(serializers.ModelSerializer):
     # user = serializers.SerializerMethodField()
     room_message = RoomMessageSerializer(many=True, source='roommessage_room')
+    # user = UserListSerializer()
 
     class Meta:
         model = ChatRoom
