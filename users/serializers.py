@@ -23,19 +23,19 @@ class UserSerializer(serializers.ModelSerializer):
         email_validation = re.compile(r'^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
         password = all(x not in ["!", "@", "#", "$", "%", "^", "&", "*", "_"] for x in data["password"])
         if not email_validation.fullmatch(email) :
-            raise serializers.ValidationError(detail={"email":"이메일 형식을 확인해주세요"})
+            raise serializers.ValidationError({"email":"이메일 형식을 확인해주세요"})
 
         if User.objects.filter(email=data["email"]).exists():
-            raise serializers.ValidationError(detail={"email":"이메일 중복됐습니다."})
+            raise serializers.ValidationError({"email":"이메일 중복됐습니다."})
 
         if User.objects.filter(nickname=data["nickname"]).exists():
-                raise serializers.ValidationError(detail={"nickname":"중복된 닉네임이 있습니다."})
+                raise serializers.ValidationError({"nickname":"중복된 닉네임이 있습니다."})
         
         if len(data["nickname"]) < 2:
-            raise serializers.ValidationError(detail={"nickname":"nickname을 두 글자 이상 작성해주세요."})
+            raise serializers.ValidationError({"nickname":"nickname을 두 글자 이상 작성해주세요."})
 
         elif len(data["password"]) < 2 or password:
-            raise serializers.ValidationError(detail={"password":"password는  2자 이상 특수문자 포함 "})
+            raise serializers.ValidationError({"password":"password는  2자 이상 특수문자 포함 "})
 
         return data
 
