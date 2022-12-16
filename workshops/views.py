@@ -8,6 +8,8 @@ from rest_framework import permissions
 from workshops.paginations import workshop_page
 from rest_framework.generics import ListAPIView
 from django.db.models import Count
+import json, os
+from pathlib import Path
 
 
 class ReviewView(APIView): # 리뷰 보기/작성
@@ -71,10 +73,36 @@ class WorkshopView(ListAPIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+# workshop lanking 순으로 정렬된 파일 읽어서 리턴
+class WorkshopLankView(APIView):
+    permission_classes = [permissions.AllowAny]
+    
+    def get(self, request):
+        BASE_DIR = Path(__file__).resolve().parent.parent
+        lank_file_path = os.path.join(BASE_DIR, 'Lank.json')
+        
+        with open(lank_file_path, "r") as f:
+            result_lanking = json.load(f)
+        lank_list = result_lanking['result_workshop_lank']
+        print(lank_list, '########')
+
+        if not lank_list:
+            return Response({"msg": "데이터가 없습니다"}, status=status.HTTP_200_OK)
+
+        query_list = [Workshop.objects.get(id=x) for x in lank_list]
+        print(query_list, '@@@@@@@@@@@')
+        slz = WorkshopListSerializer(query_list, many=True)
+
+        return Response(slz.data, status=status.HTTP_200_OK)
+
+
 class WorkshopDetailView(APIView):
     def get(self, request, workshop_id):
         workshop = get_object_or_404(Workshop, id=workshop_id)
+        workshop.views += 1
+        workshop.save()
         serializer = WorkshopSerializer(workshop)
+
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def put(self, request, workshop_id):
