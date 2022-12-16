@@ -7,7 +7,7 @@ from workshops.serializers import ReviewSerializer,ReviewCreateSerializer, Works
 from rest_framework import permissions
 from workshops.paginations import workshop_page
 from rest_framework.generics import ListAPIView
-from django.db.models import Count
+from django.db.models import Count, Q
 import json, os
 from pathlib import Path
 
@@ -56,8 +56,25 @@ class WorkshopView(ListAPIView):
     def get(self, request):
         category_id = self.request.GET.get('category')
 
-        if category_id:
-            self.queryset = Workshop.objects.filter(category=category_id).order_by('-created_at')
+        sort = self.request.GET.get('sort')
+
+        # sort와 category string이 둘 다 있을때
+        if sort and category_id:
+            if sort == 'like':
+                self.queryset = Workshop.objects.filter(category=category_id).annotate(like_count=Count('likes')).order_by('-like_count', '-created_at')
+            elif sort == 'latest':
+                self.queryset = Workshop.objects.filter(category=category_id).order_by('-created_at')
+        
+        # category id 값만 있을때
+        if category_id and not sort:
+            self.queryset = Workshop.objects.filter(category=category_id).order_by('-created_at')    
+        
+        # sort 값만 있을때
+        if sort and not category_id:
+            if sort == 'like':
+                self.queryset = Workshop.objects.annotate(like_count=Count('likes')).order_by('-like_count', '-created_at')
+            elif sort == 'latest':
+                self.queryset = Workshop.objects.all().order_by('-created_at')
 
         pages = self.paginate_queryset(self.get_queryset())
         slz = self.get_serializer(pages, many=True)
@@ -85,10 +102,20 @@ class WorkshopLankView(APIView):
             result_lanking = json.load(f)
         lank_list = result_lanking['result_workshop_lank']
 
-        if not lank_list:
-            return Response({"msg": "데이터가 없습니다"}, status=status.HTTP_200_OK)
+        query_list = []
 
-        query_list = [Workshop.objects.get(id=x) for x in lank_list]
+        for idx in lank_list:
+            try:
+                obj = Workshop.objects.get(id=idx)
+                query_list.append(obj)
+            except:
+                continue
+        
+        if not query_list:
+            obj = Workshop.objects.annotate(like_count=Count('likes')).order_by('-like_count', '-created_at')[0:7]
+            slz = WorkshopListSerializer(obj, many=True)
+            return Response(slz.data, status=status.HTTP_200_OK)
+            
         slz = WorkshopListSerializer(query_list, many=True)
 
         return Response(slz.data, status=status.HTTP_200_OK)
