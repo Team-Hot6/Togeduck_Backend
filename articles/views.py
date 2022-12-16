@@ -42,7 +42,7 @@ class ArticleView(ListAPIView):
             if sort == 'latest':
                 self.queryset = Article.objects.all().order_by('-created_at')
             elif sort == 'like':
-                self.queryset = Article.objects.annotate(like_count=Count('like').order_by('-like_count', '-created_at'))
+                self.queryset = Article.objects.annotate(like_count=Count('like')).order_by('-like_count', '-created_at')
 
         pages = self.paginate_queryset(self.get_queryset())
         slz = self.get_serializer(pages, many=True)
