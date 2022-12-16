@@ -9,6 +9,7 @@ from articles.paginations import article_top10_page, article_total_page
 from rest_framework.generics import ListAPIView
 import json, os
 from pathlib import Path
+from django.db.models import Count
 # test
 from .articlecron import get_score
 
@@ -65,7 +66,19 @@ class ArticleLankView(APIView):
             result_lanking = json.load(f)
         lank_list = result_lanking['result_article_lank']
 
-        query_list = [Article.objects.get(id=x) for x in lank_list]
+        query_list = []
+        for idx in lank_list:
+            try:
+                obj = Article.objects.get(id=idx)
+                query_list.append(obj)
+            except:
+                continue
+
+        if not query_list:
+            obj = Article.objects.annotate(like_count=Count('like')).order_by('-like_count', '-created_at')[0:10]
+            slz = ArticleListSerializer(obj, many=True)
+            return Response(slz.data, status=status.HTTP_200_OK)
+            
         slz = ArticleListSerializer(query_list, many=True)
 
         return Response(slz.data, status=status.HTTP_200_OK)
@@ -89,6 +102,10 @@ class ArticleDetailView(APIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     def get(self, request, article_id):
         article = get_object_or_404(Article, id=article_id)
+        print(request.session)
+
+        # views_cookie = request.session['user_id']
+        # cookie_name = f'hits_views:{views_cookie}'
         article.views += 1
         article.save()
         serializer = ArticleDetailSerializer(article)

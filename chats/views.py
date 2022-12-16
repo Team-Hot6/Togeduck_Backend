@@ -48,6 +48,7 @@ class ChatListView(APIView):
             new_room = ChatRoom.objects.create(sender=sender, receiver=receiver)
             json_data['room_id'] = new_room.id
             json_data['opp_email'] = receiver.email
+            json_data['opp_profile_image'] = f'{receiver.profile_image}'
             return Response(json_data, status=status.HTTP_200_OK)
         
         json_data['room_id'] = get_exist_room[0].id
@@ -56,9 +57,11 @@ class ChatListView(APIView):
         if get_exist_room[0].sender_id == sender_id:
             opp_user = User.objects.get(id=get_exist_room[0].receiver_id)
             json_data['opp_email'] = opp_user.email
+            json_data['opp_profile_image'] = f'{opp_user.profile_image}'
         else:
             opp_user = User.objects.get(id=get_exist_room[0].sender_id)
             json_data['opp_email'] = opp_user.email
+            json_data['opp_profile_image'] = f'{opp_user.profile_image}'
         return Response(json_data, status=status.HTTP_200_OK)
 
 # 개별 채팅방 관리
