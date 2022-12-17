@@ -4,11 +4,13 @@ from rest_framework.response import Response
 from rest_framework import permissions
 from rest_framework.generics import get_object_or_404
 from users.models import User
-from users.serializers import CustomTokenObtainPairSerializer, UserSerializer
+from users.serializers import CustomTokenObtainPairSerializer, UserSerializer, ChangePasswordSerializer
 from rest_framework_simplejwt.views import (
     TokenObtainPairView   
 )
 from users.serializers import MypageSerializer
+#from rest_framework.permissions import IsAuthenticated
+from rest_framework import generics # UpdateAPIView 임포트 
 
 
 
@@ -16,11 +18,11 @@ from users.serializers import MypageSerializer
 # 회원가입
 class UserView(APIView):
     def post(self, request):
-        print('나와라라라라라랄',request.data)
+       
         serializer = UserSerializer(data=request.data)
-        print('여기까지 찍히나나난')
-        if serializer.is_valid(raise_exception=True):
-            print('흐어어어어엉')
+        
+        if serializer.is_valid(raise_exception=True): # 유효성 검사시 에러 메세지 띄우기
+           
           
             serializer.save()
             return Response({"message":"가입완료 ㅇㅅㅇ"}, status=status.HTTP_201_CREATED)
@@ -40,3 +42,11 @@ class MypageView(APIView):
         user = get_object_or_404(User, id=user_id)
         serializer = MypageSerializer(user)
         return Response(serializer.data)
+
+
+# 비밀번호 변경
+class ChangePasswordView(generics.UpdateAPIView): # 업데이트 전용 뷰
+
+    queryset = User.objects.all()
+    #permission_classes = (IsAuthenticated,) # 로그인 시에만 접근 가능-> 이미 세팅에 'rest_framework_simplejwt.authentication.JWTAuthentication', 있음
+    serializer_class = ChangePasswordSerializer

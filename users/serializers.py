@@ -84,3 +84,42 @@ class MypageSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('nickname', 'email', 'profile_image', 'workshop_likes', 'hobby', 'workshop_host', 'workshop_apply_guest')
+
+
+# 비밀번호 변경
+class ChangePasswordSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, required=True) # 새로운 비번, 비번 유효성 검사
+    password2 = serializers.CharField(write_only=True, required=True) # 새로운 비번 확인
+    old_password = serializers.CharField(write_only=True, required=True) # 현재 비번
+    
+
+    class Meta:
+        model = User
+        fields = ('old_password', 'password', 'password2')
+
+    def validate(self, attrs):
+        password = all(x not in ["!", "@", "#", "$", "%", "^", "&", "*", "_"] for x in attrs["password"])
+
+        if attrs['password'] == attrs['old_password']:
+            raise serializers.ValidationError({"password": " 현재 사용중인 비밀번호와 동일한 비밀번호를 사용할 수 없습니다 "})
+
+        if len(attrs["password"]) < 2 or password:
+            raise serializers.ValidationError({"password":"password는  2자 이상 특수문자 포함 "})
+
+        if attrs['password'] != attrs['password2']:
+            raise serializers.ValidationError({"password": "비밀번호가 동일하지 않습니다 "})
+
+        return attrs
+
+    def validate_old_password(self, value): # 현재 비번 확인 
+        user = self.context['request'].user # 로그인한 유저 정보 가져오기
+        if not user.check_password(value): # 로그인한 유저의 비번이 아니라면
+            raise serializers.ValidationError({"old_password": "기존 비밀번호를 똑바로 입력하세요"})
+        return value
+
+    def update(self, instance, validated_data): # 새로운 비번 저장
+
+        instance.set_password(validated_data['password'])
+        instance.save()
+
+        return instance
