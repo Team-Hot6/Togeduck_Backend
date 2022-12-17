@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 from articles.models import Article, Comment
-from articles.serializers import ArticleListSerializer, ArticleCreateSerializer, ArticleDetailSerializer, CommentListSerializer, CommentCreateSerializer
+from articles.serializers import ArticleListSerializer, ArticleCreateSerializer, ArticleDetailSerializer, CommentListSerializer, CommentCreateSerializer, ReplyListSerializer
 from rest_framework.response import Response
 from rest_framework import status, permissions
 from rest_framework.generics import get_object_or_404
@@ -163,6 +163,14 @@ class CommentDeleteView(APIView):
             comment.delete()
             return Response({"msg":"댓글 삭제 완료!"}, status=status.HTTP_200_OK)
         return Response({"msg":"댓글을 삭제할 권한이 없습니다!"}, status=status.HTTP_403_FORBIDDEN)
+
+class ReplyView(APIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    def get(self, request, article_id, comment_id):
+        comment = Comment.objects.filter(id=comment_id)
+        serializer = ReplyListSerializer(comment, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class TestView(APIView):
     def get(self, request):
