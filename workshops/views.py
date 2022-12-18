@@ -83,9 +83,12 @@ class WorkshopView(ListAPIView):
         return self.get_paginated_response(slz.data)
     
     def post(self, request):
+      
         serializer = WorkshopCreateSerializer(data=request.data)
+        
         if serializer.is_valid():
             serializer.save(host=request.user)
+            print('adsadasdasdsadsadsadsad')
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -138,12 +141,12 @@ class WorkshopDetailView(APIView):
             if str(workshop_id) not in cookies_list:
                 response.set_cookie('hit', cookies+f'|{workshop_id}', expires=expires) # 쿠키 생성
                 with transaction.atomic(): # 모델 필드인 views에 1 추가
-                    workshop_id.views += 1
-                    workshop_id.save()
+                    workshop.views += 1
+                    workshop.save()
         else:
             response.set_cookie('hit', workshop_id, expires=expires)
-            workshop_id.views += 1
-            workshop_id.save()
+            workshop.views += 1
+            workshop.save()
         
         return response
 
