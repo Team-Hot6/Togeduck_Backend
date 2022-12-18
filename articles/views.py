@@ -13,6 +13,8 @@ from django.db.models import Count
 # test
 from .articlecron import get_score
 from django.db.models import Count
+from datetime import datetime
+from django.db import transaction
 
 
 # 페이지네이션 적용 아티클 뷰
@@ -43,7 +45,7 @@ class ArticleView(ListAPIView):
             if sort == 'latest':
                 self.queryset = Article.objects.all().order_by('-created_at')
             elif sort == 'like':
-                self.queryset = Article.objects.annotate(like_count=Count('like').order_by('-like_count', '-created_at'))
+                self.queryset = Article.objects.annotate(like_count=Count('like')).order_by('-like_count', '-created_at')
 
         pages = self.paginate_queryset(self.get_queryset())
         slz = self.get_serializer(pages, many=True)
@@ -97,15 +99,30 @@ class ArticleDetailView(APIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     def get(self, request, article_id):
         article = get_object_or_404(Article, id=article_id)
-        print(request.session)
-
-        # views_cookie = request.session['user_id']
-        # cookie_name = f'hits_views:{views_cookie}'
-        article.views += 1
-        article.save()
+        # 당일날 밤 12시에 쿠키 초기화
+        tomorrow = datetime.replace(datetime.now(), hour=23, minute=59, second=0)
+        expires = datetime.strftime(tomorrow, "%a, %d-%b-%Y %H:%M:%S GMT")
+        
         serializer = ArticleDetailSerializer(article)
         
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        response = Response(serializer.data, status=status.HTTP_200_OK)
+
+        print(request.COOKIES)
+        # 쿠키 읽기 & 생성
+        if request.COOKIES.get('hit'):
+            cookies = request.COOKIES.get('hit')
+            cookies_list = cookies.split('|')
+            if str(article_id) not in cookies_list:
+                response.set_cookie('hit', cookies+f'|{article_id}', expires=expires) # 쿠키 생성
+                with transaction.atomic(): # 모델 필드인 views에 1 추가
+                    article.views += 1
+                    article.save()
+        else:
+            response.set_cookie('hit', article_id, expires=expires)
+            article.views += 1
+            article.save()
+        
+        return response
     
     def post(self, request, article_id):
         article = get_object_or_404(Article, id=article_id)
@@ -167,4 +184,12 @@ class CommentDeleteView(APIView):
 class TestView(APIView):
     def get(self, request):
         get_score()
-        return Response('')
+        cookie = request.COOKIES
+        print(cookie)
+
+        if 'testcookie' in cookie:
+            return Response('성공!')
+
+        response = Response('cookie')
+        response.set_cookie('testcookie', 'testtest')
+        return response
