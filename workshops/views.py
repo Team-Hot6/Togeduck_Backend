@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
 from workshops.models import Workshop, Review, WorkshopApply, Hobby, Location
-from workshops.serializers import ReviewSerializer,ReviewCreateSerializer, WorkshopSerializer, WorkshopListSerializer, WorkshopCreateSerializer, HobbySerializer, LocationSerializer, WorkshopApplySerializer
+from workshops.serializers import ReviewSerializer,ReviewCreateSerializer, WorkshopSerializer, WorkshopListSerializer, WorkshopCreateSerializer, HobbySerializer, LocationSerializer
 from rest_framework import permissions
 from workshops.paginations import workshop_page
 from rest_framework.generics import ListAPIView
@@ -173,12 +173,7 @@ class ApplyView(APIView):
     def get(self, request, workshop_id): # 워크샵 신청 관리 페이지 조회 (승인/거절)
         workshop = get_object_or_404(Workshop, id=workshop_id)
         if request.user == workshop.host:
-            workshop_apply = WorkshopApply.objects.filter(workshop=workshop_id)
-            if not workshop_apply:
-                serializer = WorkshopSerializer(workshop)
-            else:
-                serializer = WorkshopApplySerializer(workshop_apply, many=True)
-            
+            serializer = WorkshopSerializer(workshop)
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response({"msg":"권한이 없습니다."}, status=status.HTTP_403_FORBIDDEN)
