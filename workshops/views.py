@@ -88,7 +88,7 @@ class WorkshopView(ListAPIView):
         
         if serializer.is_valid():
             serializer.save(host=request.user)
-            print('adsadasdasdsadsadsadsad')
+           
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

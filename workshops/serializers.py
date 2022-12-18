@@ -89,6 +89,7 @@ class WorkshopSerializer(serializers.ModelSerializer): # 특정 워크샵 상세
     location = serializers.SerializerMethodField()
     review_workshop = ReviewSerializer(many=True)
     workshop_apply = WorkshopApplySerializer(many=True)
+    review_workshop_count = serializers.SerializerMethodField()
 
     def get_host(self, obj):
         return obj.host.nickname
@@ -105,9 +106,12 @@ class WorkshopSerializer(serializers.ModelSerializer): # 특정 워크샵 상세
     def get_participant_count(self, obj):
         return obj.participant.count()
 
+    def get_review_workshop_count(self, obj):
+        return obj.review_workshop.count()
+
     class Meta:
         model = Workshop
-        fields = ('pk', 'title', 'content', 'workshop_image', 'category', 'location', 'address', 'host', 'host_id', 'amount', 'date', 'created_at', 'max_guest', 'participant_count', 'likes_count', 'review_workshop', 'workshop_apply', 'views',)
+        fields = ('pk', 'title', 'content', 'workshop_image', 'category', 'location', 'address', 'host', 'host_id', 'amount', 'date', 'created_at', 'max_guest', 'participant_count', 'likes_count', 'review_workshop', 'workshop_apply', 'views','review_workshop_count',)
 
 
 
