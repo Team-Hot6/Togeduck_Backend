@@ -216,3 +216,8 @@ AUTH_USER_MODEL = 'users.User'
 REST_USE_JWT = True
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+# articles app의 articlecron.py 파일의 get_score 함수 10분마다 실행
+CRONJOBS = [
+    ('10 * * * *', 'articles.articlecron.get_score')
+]
