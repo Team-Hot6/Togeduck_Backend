@@ -10,7 +10,8 @@ from rest_framework.generics import ListAPIView
 from django.db.models import Count, Q
 import json, os
 from pathlib import Path
-
+from datetime import datetime
+from django.db import transaction
 
 class ReviewView(APIView): # 리뷰 보기/작성
     def get(self, request, workshop_id):
@@ -124,11 +125,28 @@ class WorkshopLankView(APIView):
 class WorkshopDetailView(APIView):
     def get(self, request, workshop_id):
         workshop = get_object_or_404(Workshop, id=workshop_id)
-        workshop.views += 1
-        workshop.save()
+        tomorrow = datetime.replace(datetime.now(), hour=23, minute=59, second=0)
+        expires = datetime.strftime(tomorrow, "%a, %d-%b-%Y %H:%M:%S GMT")
+        
         serializer = WorkshopSerializer(workshop)
+        response = Response(serializer.data, status=status.HTTP_200_OK)
 
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        # 쿠키 읽기 & 생성
+        if request.COOKIES.get('hit'):
+            cookies = request.COOKIES.get('hit')
+            cookies_list = cookies.split('|')
+            if str(workshop_id) not in cookies_list:
+                response.set_cookie('hit', cookies+f'|{workshop_id}', expires=expires) # 쿠키 생성
+                with transaction.atomic(): # 모델 필드인 views에 1 추가
+                    workshop_id.views += 1
+                    workshop_id.save()
+        else:
+            response.set_cookie('hit', workshop_id, expires=expires)
+            workshop_id.views += 1
+            workshop_id.save()
+        
+        return response
+
 
     def put(self, request, workshop_id):
         workshop = get_object_or_404(Workshop, id=workshop_id)
