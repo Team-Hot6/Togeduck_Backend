@@ -82,8 +82,7 @@ class WorkshopView(ListAPIView):
         return self.get_paginated_response(slz.data)
     
     def post(self, request):
-        print('짜증낭ㅇㅎㅇㅎㅇㅀ')
-        print(request.data)
+      
         serializer = WorkshopCreateSerializer(data=request.data)
         
         if serializer.is_valid():
