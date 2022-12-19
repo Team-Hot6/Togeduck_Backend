@@ -124,3 +124,10 @@ class ChangePasswordSerializer(serializers.ModelSerializer):
         instance.save()
 
         return instance
+
+
+# 마이페이지 정보 변경(닉네임, 이메일, 프로필 사진)
+class MypageInfoPutSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('profile_image', 'nickname', 'email',)
