@@ -3,14 +3,15 @@ from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
 from workshops.models import Workshop, Review, WorkshopApply, Hobby, Location
-from workshops.serializers import ReviewSerializer,ReviewCreateSerializer, WorkshopSerializer, WorkshopListSerializer, WorkshopCreateSerializer, HobbySerializer, LocationSerializer, WorkshopApplySerializer
+from workshops.serializers import ReviewSerializer,ReviewCreateSerializer, WorkshopSerializer, WorkshopListSerializer, WorkshopCreateSerializer, HobbySerializer, LocationSerializer
 from rest_framework import permissions
 from workshops.paginations import workshop_page
 from rest_framework.generics import ListAPIView
 from django.db.models import Count, Q
 import json, os
 from pathlib import Path
-
+from datetime import datetime
+from django.db import transaction
 
 class ReviewView(APIView): # 리뷰 보기/작성
     def get(self, request, workshop_id):
@@ -82,9 +83,12 @@ class WorkshopView(ListAPIView):
         return self.get_paginated_response(slz.data)
     
     def post(self, request):
+      
         serializer = WorkshopCreateSerializer(data=request.data)
+        
         if serializer.is_valid():
             serializer.save(host=request.user)
+            print('adsadasdasdsadsadsadsad')
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -124,11 +128,28 @@ class WorkshopLankView(APIView):
 class WorkshopDetailView(APIView):
     def get(self, request, workshop_id):
         workshop = get_object_or_404(Workshop, id=workshop_id)
-        workshop.views += 1
-        workshop.save()
+        tomorrow = datetime.replace(datetime.now(), hour=23, minute=59, second=0)
+        expires = datetime.strftime(tomorrow, "%a, %d-%b-%Y %H:%M:%S GMT")
+        
         serializer = WorkshopSerializer(workshop)
+        response = Response(serializer.data, status=status.HTTP_200_OK)
 
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        # 쿠키 읽기 & 생성
+        if request.COOKIES.get('hit'):
+            cookies = request.COOKIES.get('hit')
+            cookies_list = cookies.split('|')
+            if str(workshop_id) not in cookies_list:
+                response.set_cookie('hit', cookies+f'|{workshop_id}', expires=expires) # 쿠키 생성
+                with transaction.atomic(): # 모델 필드인 views에 1 추가
+                    workshop.views += 1
+                    workshop.save()
+        else:
+            response.set_cookie('hit', workshop_id, expires=expires)
+            workshop.views += 1
+            workshop.save()
+        
+        return response
+
 
     def put(self, request, workshop_id):
         workshop = get_object_or_404(Workshop, id=workshop_id)
@@ -155,12 +176,7 @@ class ApplyView(APIView):
     def get(self, request, workshop_id): # 워크샵 신청 관리 페이지 조회 (승인/거절)
         workshop = get_object_or_404(Workshop, id=workshop_id)
         if request.user == workshop.host:
-            workshop_apply = WorkshopApply.objects.filter(workshop=workshop_id)
-            if not workshop_apply:
-                serializer = WorkshopSerializer(workshop)
-            else:
-                serializer = WorkshopApplySerializer(workshop_apply, many=True)
-            
+            serializer = WorkshopSerializer(workshop)
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response({"msg":"권한이 없습니다."}, status=status.HTTP_403_FORBIDDEN)

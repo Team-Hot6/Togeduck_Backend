@@ -67,6 +67,10 @@ INSTALLED_APPS = [
     "articles",
     "wallets",
     "workshops",
+    # 데이터베이스 삭제시 관련 파일도 같이 삭제
+    "django_cleanup.apps.CleanupConfig",
+    # django cron tab 설치
+    "django_crontab",
 ]
 
 ASGI_APPLICATION = "Togeduck.asgi.application"
@@ -212,3 +216,8 @@ AUTH_USER_MODEL = 'users.User'
 REST_USE_JWT = True
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+# articles app의 articlecron.py 파일의 get_score 함수 10분마다 실행
+CRONJOBS = [
+    ('10 * * * *', 'articles.articlecron.get_score')
+]

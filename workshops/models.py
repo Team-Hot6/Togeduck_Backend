@@ -36,7 +36,6 @@ class Workshop(models.Model):
     def __str__(self):
         return self.title 
 
-
 class WorkshopApply(models.Model):
     CHOISE_TYPE = (
     ('승인', '승인'),
@@ -59,4 +58,6 @@ class Review(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
+
         return str(self.content)
+
