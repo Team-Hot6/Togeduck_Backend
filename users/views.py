@@ -4,11 +4,12 @@ from rest_framework.response import Response
 from rest_framework import permissions
 from rest_framework.generics import get_object_or_404
 from users.models import User
-from users.serializers import CustomTokenObtainPairSerializer, UserSerializer
+from workshops.models import Workshop
+from users.serializers import CustomTokenObtainPairSerializer, UserSerializer, MypageSerializer
 from rest_framework_simplejwt.views import (
     TokenObtainPairView   
 )
-from users.serializers import MypageSerializer
+from workshops.serializers import WorkshopSerializer
 
 
 
@@ -31,9 +32,18 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 
 
 
-# 마이페이지
-class MypageView(APIView):
+
+class MypageView(APIView): # 마이페이지 - 전체적인 정보 불러오기
+
     def get(self, request, user_id):  
         user = get_object_or_404(User, id=user_id)
         serializer = MypageSerializer(user)
         return Response(serializer.data)
+
+
+
+        
+
+    
+
+        

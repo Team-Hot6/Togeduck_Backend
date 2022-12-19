@@ -3,7 +3,8 @@ from users.models import User
 from rest_framework import serializers
 import re
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer 
-from workshops.serializers import HobbySerializer, WorkshopListSerializer, WorkshopApplySerializer, MypageWorkshopLikeSerializer
+from workshops.serializers import HobbySerializer, WorkshopSerializer, WorkshopApplySerializer, MypageWorkshopLikeSerializer
+from workshops.models import Workshop
 
 
 # 회원가입
@@ -70,12 +71,12 @@ class UserListSerializer(serializers.ModelSerializer):
         exclude = ('password',)
 
 
-# 마이페이지
 
-class MypageSerializer(serializers.ModelSerializer): 
+
+class MypageSerializer(serializers.ModelSerializer): # 마이페이지 - 전체적인 정보 불러오기
     workshop_likes = MypageWorkshopLikeSerializer(many=True)
     hobby = HobbySerializer(many=True)
-    workshop_host = WorkshopListSerializer(many=True)
+    workshop_host = WorkshopSerializer(many=True)
     workshop_apply_guest = WorkshopApplySerializer(many=True)
     class Meta:
         model = User
