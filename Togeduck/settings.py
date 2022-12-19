@@ -39,9 +39,29 @@ def get_secret(setting, secret=secret):
 SECRET_KEY = get_secret('SECRET_KEY') # my-secret-key
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', '0') == '1'
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['backend',]
+
+POSTGRES_DB = os.environ.get('POSTGRES_DB', '')
+if POSTGRES_DB:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': POSTGRES_DB,
+            'USER': os.environ.get('POSTGRES_USER', ''),
+            'PASSWORD': os.environ.get('POSTGRES_PASSWORD', ''),
+            'HOST': os.environ.get('POSTGRES_HOST', ''),
+            'PORT': os.environ.get('POSTGRES_PORT', ''),
+        }
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # Application definition
@@ -65,7 +85,6 @@ INSTALLED_APPS = [
     "users",
     "chats",
     "articles",
-    "wallets",
     "workshops",
     # 데이터베이스 삭제시 관련 파일도 같이 삭제
     "django_cleanup.apps.CleanupConfig",
@@ -111,7 +130,7 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=30),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=45),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': False,
@@ -216,6 +235,12 @@ AUTH_USER_MODEL = 'users.User'
 REST_USE_JWT = True
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+# CORS 허용 목록에 ec2 ip를 추가합니다.
+CORS_ORIGIN_WHITELIST = ['http://3.34.40.115']
+
+# CSRF 허용 목록을 CORS와 동일하게 설정합니다.
+CSRF_TRUSTED_ORIGINS = CORS_ORIGIN_WHITELIST
 
 # articles app의 articlecron.py 파일의 get_score 함수 10분마다 실행
 CRONJOBS = [

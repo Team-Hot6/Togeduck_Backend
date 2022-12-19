@@ -2,7 +2,6 @@ from django.db import models
 from users.models import User
 from .utils import rename_imagefile_to_uuid
 
-
 class Hobby(models.Model):
     category = models.CharField(max_length=10)
 
@@ -27,7 +26,7 @@ class Workshop(models.Model):
     content = models.TextField(max_length=500)
     workshop_image = models.ImageField(upload_to=rename_imagefile_to_uuid)
     max_guest = models.IntegerField()
-    amount = models.DecimalField(decimal_places=0, max_digits=10000000000000000)
+    amount = models.DecimalField(decimal_places=0, max_digits=1000000)
     created_at = models.DateTimeField(auto_now_add=True)
     participant = models.ManyToManyField(User, related_name='workshop_participant', blank=True, through='WorkshopApply', through_fields=('workshop', 'guest'),) 
     likes = models.ManyToManyField(User, related_name='workshop_likes', blank=True)
@@ -35,6 +34,7 @@ class Workshop(models.Model):
 
     def __str__(self):
         return self.title 
+
 
 class WorkshopApply(models.Model):
     CHOISE_TYPE = (
