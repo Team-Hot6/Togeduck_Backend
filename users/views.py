@@ -59,7 +59,7 @@ class MypageInfoPutView(APIView):
         user = get_object_or_404(User, id=user_id)
         if request.user == user:
             serializer = MypageInfoPutSerializer(user, data=request.data)
-            if serializer.is_valid():
+            if serializer.is_valid(raise_exception=True): # 유효성 검사시 에러 메세지 띄우기
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
             else:
