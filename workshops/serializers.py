@@ -107,7 +107,7 @@ class WorkshopSerializer(serializers.ModelSerializer): # 특정 워크샵 상세
 
     class Meta:
         model = Workshop
-        fields = ('pk', 'title', 'content', 'workshop_image', 'category', 'location', 'address', 'host', 'host_id', 'amount', 'date', 'created_at', 'max_guest', 'participant_count', 'likes_count', 'review_workshop', 'workshop_apply', 'views',)
+        fields = ('pk', 'title', 'content', 'workshop_image', 'category', 'location', 'address', 'host', 'host_id', 'amount', 'date', 'created_at', 'max_guest', 'participant', 'participant_count', 'likes_count', 'review_workshop', 'workshop_apply', 'views',)
 
 
 
@@ -115,6 +115,7 @@ class WorkshopCreateSerializer(serializers.ModelSerializer): # 워크샵 생성,
     class Meta:
         model = Workshop
         fields = ('title', 'content', 'workshop_image', 'category', 'location', 'address', 'amount', 'date', 'max_guest',)
+        read_only_fields = ('workshop_image',)
 
 
 class MypageWorkshopLikeSerializer(serializers.ModelSerializer): # 마이페이지 - 좋아요 한 워크샵
