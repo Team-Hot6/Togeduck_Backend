@@ -192,13 +192,9 @@ class ApplyView(APIView):
 
             if request.user in workshop.participant.all():
                 workshop.participant.remove(request.user)
-                fix_max_guest = WorkshopApply.objects.filter(workshop=workshop_id, result='승인').count()
-                print("fix_max_guest : ",fix_max_guest)
                 return Response({"msg":"워크샵 신청을 취소했습니다."}, status=status.HTTP_200_OK)
             else: 
                 WorkshopApply.objects.create(guest=request.user, workshop=workshop, result='대기')     
-                fix_max_guest = WorkshopApply.objects.filter(workshop=workshop_id, result='승인').count()
-                print("fix_max_guest : ",fix_max_guest)  
                 return Response({"msg":"워크샵 신청을 접수했습니다."}, status=status.HTTP_200_OK)
         else:
             return Response({"msg":"해당 workshop의 host는 참가신청할 수 없습니다."}, status=status.HTTP_403_FORBIDDEN)
