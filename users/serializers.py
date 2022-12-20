@@ -48,7 +48,7 @@ class UserSerializer(serializers.ModelSerializer):
         return user
     
     def update(self, instance, validated_data):
-        user = super().create(validated_data) 
+        user = super().create(validated_data)
         password = user.password 
         user.set_password(password) 
         user.save() 
@@ -128,6 +128,28 @@ class ChangePasswordSerializer(serializers.ModelSerializer):
 
 # 마이페이지 정보 변경(닉네임, 이메일, 프로필 사진)
 class MypageInfoPutSerializer(serializers.ModelSerializer):
+    nickname = serializers.CharField()
+    email = serializers.CharField()
+
     class Meta:
         model = User
         fields = ('profile_image', 'nickname', 'email',)
+
+    def validate(self, data):
+
+        email = data["email"]
+        email_validation = re.compile(r'^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
+        password = all(x not in ["!", "@", "#", "$", "%", "^", "&", "*", "_"] for x in data["password"])
+        if not email_validation.fullmatch(email) :
+            raise serializers.ValidationError({"email":"이메일 형식을 확인해주세요"})
+
+        if User.objects.filter(email=data["email"]).exists():
+            raise serializers.ValidationError({"email":"이메일 중복됐습니다."})
+
+        if User.objects.filter(nickname=data["nickname"]).exists():
+                raise serializers.ValidationError({"nickname":"중복된 닉네임이 있습니다."})
+        
+        if len(data["nickname"]) < 2:
+            raise serializers.ValidationError({"nickname":"nickname을 두 글자 이상 작성해주세요."})
+
+        return data
