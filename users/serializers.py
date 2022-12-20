@@ -3,7 +3,8 @@ from users.models import User
 from rest_framework import serializers
 import re
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer 
-from workshops.serializers import HobbySerializer, WorkshopListSerializer, WorkshopApplySerializer, MypageWorkshopLikeSerializer
+from workshops.serializers import HobbySerializer, WorkshopSerializer, WorkshopApplySerializer, MypageWorkshopLikeSerializer
+from workshops.models import Workshop
 
 
 
@@ -47,7 +48,7 @@ class UserSerializer(serializers.ModelSerializer):
         return user
     
     def update(self, instance, validated_data):
-        user = super().create(validated_data) 
+        user = super().create(validated_data)
         password = user.password 
         user.set_password(password) 
         user.save() 
@@ -74,12 +75,12 @@ class UserListSerializer(serializers.ModelSerializer):
         exclude = ('password',)
 
 
-# 마이페이지
 
-class MypageSerializer(serializers.ModelSerializer): 
+
+class MypageSerializer(serializers.ModelSerializer): # 마이페이지 - 전체적인 정보 불러오기
     workshop_likes = MypageWorkshopLikeSerializer(many=True)
     hobby = HobbySerializer(many=True)
-    workshop_host = WorkshopListSerializer(many=True)
+    workshop_host = WorkshopSerializer(many=True)
     workshop_apply_guest = WorkshopApplySerializer(many=True)
     class Meta:
         model = User
@@ -123,3 +124,35 @@ class ChangePasswordSerializer(serializers.ModelSerializer):
         instance.save()
 
         return instance
+
+
+# 마이페이지 정보 변경(닉네임, 이메일, 프로필 사진)
+class MypageInfoPutSerializer(serializers.ModelSerializer):
+    nickname = serializers.CharField()
+    email = serializers.CharField()
+
+    class Meta:
+        model = User
+        fields = ('profile_image', 'nickname', 'email',)
+
+    def validate(self, data):
+
+        if len(data["nickname"]) < 2:
+            raise serializers.ValidationError({"nickname":"nickname을 두 글자 이상 작성해주세요."})
+
+        if User.objects.filter(nickname=data["nickname"]).exists():
+            raise serializers.ValidationError({"nickname":"중복된 닉네임이 있습니다."})
+
+        email = data["email"]
+        email_validation = re.compile(r'^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
+        if not email_validation.fullmatch(email) :
+            raise serializers.ValidationError({"email":"이메일 형식을 확인해주세요"})
+
+        if User.objects.filter(email=data["email"]).exists():
+            raise serializers.ValidationError({"email":"이메일 중복됐습니다."})
+        
+        return data
+
+
+
+    
