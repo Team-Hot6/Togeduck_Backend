@@ -210,6 +210,12 @@ REST_USE_JWT = True
 
 CORS_ALLOW_ALL_ORIGINS = True
 
+CORS_ORIGIN_WHITELIST = ['http://3.34.40.115', 'http://*.carrotww.shop']
+# CORS_ORIGIN_WHITELIST = ['*']
+
+# CSRF 허용 목록을 CORS와 동일하게 설정합니다.
+CSRF_TRUSTED_ORIGINS = CORS_ORIGIN_WHITELIST
+
 # articles app의 articlecron.py 파일의 get_score 함수 10분마다 실행
 CRONJOBS = [
     ('10 * * * *', 'articles.articlecron.get_score')
