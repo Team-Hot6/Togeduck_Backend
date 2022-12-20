@@ -37,18 +37,6 @@ class ArticleCreateSerializer(serializers.ModelSerializer):
         model = Article
         exclude = ('user', )
 
-# 댓글 전체 보기
-class CommentListSerializer(serializers.ModelSerializer):
-    user = serializers.SerializerMethodField()
-
-    def get_user(self,obj):
-        return obj.user.nickname
-
-    class Meta:
-        model = Comment
-        fields = "__all__"
-        # exclude = ('updated_at','article',)
-
 # 게시글 상세
 class ArticleDetailSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
@@ -79,6 +67,7 @@ class CommentCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ('content',)
+
 # 대댓글 보기
 class ReplySerializer(serializers.ModelSerializer):
     time = serializers.SerializerMethodField()
@@ -98,6 +87,18 @@ class ReplySerializer(serializers.ModelSerializer):
     class Meta:
         model = Reply
         exclude = ('created_at',)
+
+# 대댓글
+class CommentListSerializer(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField()
+    reply_comment = ReplySerializer(many=True)
+
+    def get_user(self,obj):
+        return obj.user.nickname
+
+    class Meta:
+        model = Comment
+        fields = "__all__"
 
 # 대댓글 작성
 class ReplyCreateSerializer(serializers.ModelSerializer):

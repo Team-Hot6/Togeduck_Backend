@@ -10,6 +10,5 @@ urlpatterns = [
     path('<int:article_id>/comment/', views.CommentView.as_view(), name='comment_view'),
     path('<int:article_id>/comment/<int:comment_id>/', views.CommentDeleteView.as_view(), name='comment_delete_view'),
     path('<int:article_id>/comment/<int:comment_id>/reply/', views.ReplyView.as_view(), name='reply_view'),
-    path('<int:article_id>/comment/<int:comment_id>/reply/<int:reply_id>', views.ReplyDeleteView.as_view(), name='reply_delete_view'),
-    path('test/', views.TestView.as_view()),
+    path('<int:article_id>/comment/<int:comment_id>/reply/<int:reply_id>/', views.ReplyDeleteView.as_view(), name='reply_delete_view'),
 ]

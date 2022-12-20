@@ -172,20 +172,16 @@ class CommentDeleteView(APIView):
 # 게시글 대댓글
 class ReplyView(APIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-
-    def get(self, request, article_id, comment_id):
-        article = get_object_or_404(Article, id=article_id)
-        comment = article.comment_article.get(id=comment_id)
-        reply = comment.reply_comment.all()
-        serializer = ReplySerializer(reply, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
     
     def post(self, request, article_id, comment_id):
+        if not request.user.is_authenticated:
+            return Response({"msg":"로그인 된 사용자만 답글을 작성할 수 있습니다!"}, status=status.HTTP_401_UNAUTHORIZED)
         serializer = ReplyCreateSerializer(data=request.data)
 
         if serializer.is_valid():
             serializer.save(article_id=article_id,comment_id=comment_id,user=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # 대댓글 삭제
 class ReplyDeleteView(APIView):
@@ -200,9 +196,3 @@ class ReplyDeleteView(APIView):
             reply.delete()
             return Response({"msg":"삭제 완료!"},status=status.HTTP_200_OK)
         return Response({"msg":"작성자 본인만 삭제가 가능합니다."}, status=status.HTTP_403_FORBIDDEN)
-
-# Lank 테스트
-class TestView(APIView):
-    def get(self, request):
-        get_score()
-        return Response('')
