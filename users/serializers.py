@@ -139,7 +139,6 @@ class MypageInfoPutSerializer(serializers.ModelSerializer):
 
         email = data["email"]
         email_validation = re.compile(r'^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
-        password = all(x not in ["!", "@", "#", "$", "%", "^", "&", "*", "_"] for x in data["password"])
         if not email_validation.fullmatch(email) :
             raise serializers.ValidationError({"email":"이메일 형식을 확인해주세요"})
 
