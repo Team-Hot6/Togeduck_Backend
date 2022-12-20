@@ -52,7 +52,7 @@ class WorkshopApplySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = WorkshopApply
-        fields = ('id', 'guest', 'guest_nickname', 'workshop', 'result', 'created_at',)
+        fields = ('workshop_id', 'id', 'guest', 'guest_nickname', 'workshop', 'result', 'created_at',)
 
 class WorkshopListSerializer(serializers.ModelSerializer): # 워크샵 전체 목록 조회
     category = serializers.SerializerMethodField()
