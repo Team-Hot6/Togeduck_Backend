@@ -137,6 +137,12 @@ class MypageInfoPutSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
 
+        if len(data["nickname"]) < 2:
+            raise serializers.ValidationError({"nickname":"nickname을 두 글자 이상 작성해주세요."})
+
+        if User.objects.filter(nickname=data["nickname"]).exists():
+            raise serializers.ValidationError({"nickname":"중복된 닉네임이 있습니다."})
+
         email = data["email"]
         email_validation = re.compile(r'^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
         if not email_validation.fullmatch(email) :
@@ -144,11 +150,9 @@ class MypageInfoPutSerializer(serializers.ModelSerializer):
 
         if User.objects.filter(email=data["email"]).exists():
             raise serializers.ValidationError({"email":"이메일 중복됐습니다."})
-
-        if User.objects.filter(nickname=data["nickname"]).exists():
-                raise serializers.ValidationError({"nickname":"중복된 닉네임이 있습니다."})
         
-        if len(data["nickname"]) < 2:
-            raise serializers.ValidationError({"nickname":"nickname을 두 글자 이상 작성해주세요."})
-
         return data
+
+
+
+    
