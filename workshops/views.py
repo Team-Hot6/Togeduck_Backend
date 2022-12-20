@@ -88,7 +88,7 @@ class WorkshopView(ListAPIView):
         
         if serializer.is_valid():
             serializer.save(host=request.user)
-            print('adsadasdasdsadsadsadsad')
+           
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -184,11 +184,21 @@ class ApplyView(APIView):
     def post(self, request, workshop_id): # 워크샵 신청
         workshop = get_object_or_404(Workshop, id=workshop_id)
         if request.user != workshop.host: 
+
+            max_guest = workshop.max_guest
+            approve_guest = WorkshopApply.objects.filter(workshop=workshop_id, result='승인').count()
+            if max_guest == approve_guest:
+                return Response({"msg":"모집이 마감되었습니다."}, status=status.HTTP_200_OK)
+
             if request.user in workshop.participant.all():
                 workshop.participant.remove(request.user)
+                fix_max_guest = WorkshopApply.objects.filter(workshop=workshop_id, result='승인').count()
+                print("fix_max_guest : ",fix_max_guest)
                 return Response({"msg":"워크샵 신청을 취소했습니다."}, status=status.HTTP_200_OK)
             else: 
-                WorkshopApply.objects.create(guest=request.user, workshop=workshop, result='대기')       
+                WorkshopApply.objects.create(guest=request.user, workshop=workshop, result='대기')     
+                fix_max_guest = WorkshopApply.objects.filter(workshop=workshop_id, result='승인').count()
+                print("fix_max_guest : ",fix_max_guest)  
                 return Response({"msg":"워크샵 신청을 접수했습니다."}, status=status.HTTP_200_OK)
         else:
             return Response({"msg":"해당 workshop의 host는 참가신청할 수 없습니다."}, status=status.HTTP_403_FORBIDDEN)

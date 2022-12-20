@@ -114,7 +114,7 @@ class ChangePasswordSerializer(serializers.ModelSerializer):
     def validate_old_password(self, value): # 현재 비번 확인 
         user = self.context['request'].user # 로그인한 유저 정보 가져오기
         if not user.check_password(value): # 로그인한 유저의 비번이 아니라면
-            raise serializers.ValidationError({"old_password": "기존 비밀번호를 똑바로 입력하세요"})
+            raise serializers.ValidationError({"old_password": "기존 비밀번호가 아닙니다"})
         return value
 
     def update(self, instance, validated_data): # 새로운 비번 저장
