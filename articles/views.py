@@ -13,6 +13,9 @@ from django.db.models import Count
 # test
 from .articlecron import get_score
 from django.db.models import Count
+from datetime import datetime
+from django.db import transaction
+
 
 
 # 페이지네이션 적용 아티클 뷰
@@ -98,15 +101,30 @@ class ArticleDetailView(APIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     def get(self, request, article_id):
         article = get_object_or_404(Article, id=article_id)
-        print(request.session)
-
-        # views_cookie = request.session['user_id']
-        # cookie_name = f'hits_views:{views_cookie}'
-        article.views += 1
-        article.save()
+        # 당일날 밤 12시에 쿠키 초기화
+        tomorrow = datetime.replace(datetime.now(), hour=23, minute=59, second=0)
+        expires = datetime.strftime(tomorrow, "%a, %d-%b-%Y %H:%M:%S GMT")
+        
         serializer = ArticleDetailSerializer(article)
         
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        response = Response(serializer.data, status=status.HTTP_200_OK)
+
+        print(request.COOKIES)
+        # 쿠키 읽기 & 생성
+        if request.COOKIES.get('hit'):
+            cookies = request.COOKIES.get('hit')
+            cookies_list = cookies.split('|')
+            if str(article_id) not in cookies_list:
+                response.set_cookie('hit', cookies+f'|{article_id}', expires=expires) # 쿠키 생성
+                with transaction.atomic(): # 모델 필드인 views에 1 추가
+                    article.views += 1
+                    article.save()
+        else:
+            response.set_cookie('hit', article_id, expires=expires)
+            article.views += 1
+            article.save()
+        
+        return response
     
     def post(self, request, article_id):
         article = get_object_or_404(Article, id=article_id)
@@ -169,6 +187,7 @@ class CommentDeleteView(APIView):
             return Response({"msg":"댓글 삭제 완료!"}, status=status.HTTP_200_OK)
         return Response({"msg":"댓글을 삭제할 권한이 없습니다!"}, status=status.HTTP_403_FORBIDDEN)
 
+
 # 게시글 대댓글
 class ReplyView(APIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
@@ -182,6 +201,7 @@ class ReplyView(APIView):
             serializer.save(article_id=article_id,comment_id=comment_id,user=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 # 대댓글 삭제
 class ReplyDeleteView(APIView):

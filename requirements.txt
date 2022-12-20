@@ -30,3 +30,5 @@ txaio==22.2.1
 typing_extensions==4.4.0
 tzdata==2022.7
 zope.interface==5.5.2
+django-cleanup==6.0.0
+django-crontab==0.7.1
