@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
 from workshops.models import Workshop, Review, WorkshopApply, Hobby, Location
-from workshops.serializers import ReviewSerializer,ReviewCreateSerializer, WorkshopSerializer, WorkshopListSerializer, WorkshopCreateSerializer, WorkshopUpdateSerializer, HobbySerializer, LocationSerializer
+from workshops.serializers import ReviewSerializer,ReviewCreateSerializer, WorkshopSerializer, WorkshopListSerializer, WorkshopCreateSerializer, HobbySerializer, LocationSerializer, WorkshopUpdateSerializer
 from rest_framework import permissions
 from workshops.paginations import workshop_page
 from rest_framework.generics import ListAPIView
@@ -154,34 +154,22 @@ class WorkshopDetailView(APIView):
 
     def put(self, request, workshop_id):
         workshop = get_object_or_404(Workshop, id=workshop_id)
-        if request.user == workshop.host: 
-            print("##########################")
-            print(request.data)
-            print("@@@@@@@@@@@@@@@@@@@@@@")
-            # print(request.data)
+        if request.user == workshop.host:
+            origin_image = workshop.workshop_image
+            if 'workshop_image' not in request.data:
+                slz = WorkshopUpdateSerializer(workshop, data=request.data)
+                if slz.is_valid():
+                    slz.save(id=workshop_id, workshop_image=origin_image)
+                    print(slz.data)
+                return Response('', status=status.HTTP_200_OK)
+            else:
+                slz = WorkshopCreateSerializer(workshop, data=request.data)
+                if slz.is_valid():
+                    slz.save(id=workshop_id)
+                return Response('', status=status.HTTP_200_OK)
+        
+        return Response('', status=status.HTTP_400_BAD_REQUEST)
 
-            try: # 수정 이미지가 있으면
-                serializer = WorkshopCreateSerializer(workshop, data=request.data)
-                if serializer.is_valid():
-                    serializer.save()
-                    print("수정 이미지가 있으면")
-                    return Response(serializer.data, status=status.HTTP_200_OK)
-                else:
-                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-            except: # 수정 이미지가 없으면
-                serializer = WorkshopUpdateSerializer(workshop, data=request.data)
-                if serializer.is_valid():
-                    serializer.save()
-                    print("수정 이미지가 없으면")
-                    return Response(serializer.data, status=status.HTTP_200_OK)
-                else:
-                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-
-        else:
-            return Response({"msg":"권한이 없습니다."}, status=status.HTTP_403_FORBIDDEN)
 
     def delete(self, request, workshop_id):
         workshop = get_object_or_404(Workshop, id=workshop_id)
