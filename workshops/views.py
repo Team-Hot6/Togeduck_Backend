@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
 from workshops.models import Workshop, Review, WorkshopApply, Hobby, Location
-from workshops.serializers import ReviewSerializer,ReviewCreateSerializer, WorkshopSerializer, WorkshopListSerializer, WorkshopCreateSerializer, HobbySerializer, LocationSerializer
+from workshops.serializers import ReviewSerializer,ReviewCreateSerializer, WorkshopSerializer, WorkshopListSerializer, WorkshopCreateSerializer, HobbySerializer, LocationSerializer, WorkshopUpdateSerializer
 from rest_framework import permissions
 from workshops.paginations import workshop_page
 from rest_framework.generics import ListAPIView
@@ -78,7 +78,8 @@ class WorkshopView(ListAPIView):
                 self.queryset = Workshop.objects.all().order_by('-created_at')
 
         pages = self.paginate_queryset(self.get_queryset())
-        slz = self.get_serializer(pages, many=True)
+        # slz = self.get_serializer(pages, many=True)
+        slz = WorkshopListSerializer(pages, many=True)
 
         return self.get_paginated_response(slz.data)
     
@@ -153,15 +154,22 @@ class WorkshopDetailView(APIView):
 
     def put(self, request, workshop_id):
         workshop = get_object_or_404(Workshop, id=workshop_id)
-        if request.user == workshop.host: 
-            serializer = WorkshopCreateSerializer(workshop, data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_200_OK)
+        if request.user == workshop.host:
+            origin_image = workshop.workshop_image
+            if 'workshop_image' not in request.data:
+                slz = WorkshopUpdateSerializer(workshop, data=request.data)
+                if slz.is_valid():
+                    slz.save(id=workshop_id, workshop_image=origin_image)
+                    print(slz.data)
+                return Response('', status=status.HTTP_200_OK)
             else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        else:
-            return Response({"msg":"권한이 없습니다."}, status=status.HTTP_403_FORBIDDEN)
+                slz = WorkshopCreateSerializer(workshop, data=request.data)
+                if slz.is_valid():
+                    slz.save(id=workshop_id)
+                return Response('', status=status.HTTP_200_OK)
+        
+        return Response('', status=status.HTTP_400_BAD_REQUEST)
+
 
     def delete(self, request, workshop_id):
         workshop = get_object_or_404(Workshop, id=workshop_id)
