@@ -12,19 +12,14 @@ from rest_framework_simplejwt.views import (
 from users.serializers import MypageSerializer
 #from rest_framework.permissions import IsAuthenticated
 from rest_framework import generics # UpdateAPIView 임포트 
-
-
+from allauth.socialaccount.models import SocialAccount
 
 
 # 회원가입
 class UserView(APIView):
     def post(self, request):
-       
         serializer = UserSerializer(data=request.data)
-        
         if serializer.is_valid(raise_exception=True): # 유효성 검사시 에러 메세지 띄우기
-           
-          
             serializer.save()
             return Response({"message":"가입완료 ㅇㅅㅇ"}, status=status.HTTP_201_CREATED)
         else:
@@ -34,8 +29,6 @@ class UserView(APIView):
 # 로그인 토큰
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer 
-
-
 
 
 class MypageView(APIView): # 마이페이지 - 전체적인 정보 불러오기
