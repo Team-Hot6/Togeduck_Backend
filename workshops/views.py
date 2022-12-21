@@ -78,7 +78,8 @@ class WorkshopView(ListAPIView):
                 self.queryset = Workshop.objects.all().order_by('-created_at')
 
         pages = self.paginate_queryset(self.get_queryset())
-        slz = self.get_serializer(pages, many=True)
+        # slz = self.get_serializer(pages, many=True)
+        slz = WorkshopListSerializer(pages, many=True)
 
         return self.get_paginated_response(slz.data)
     
