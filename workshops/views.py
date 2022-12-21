@@ -13,6 +13,7 @@ from pathlib import Path
 from datetime import datetime
 from django.db import transaction
 
+
 class ReviewView(APIView): # 리뷰 보기/작성
     def get(self, request, workshop_id):
         article = get_object_or_404(Workshop,id=workshop_id) 
@@ -155,21 +156,15 @@ class WorkshopDetailView(APIView):
     def put(self, request, workshop_id):
         workshop = get_object_or_404(Workshop, id=workshop_id)
         if request.user == workshop.host:
-            origin_image = workshop.workshop_image
             if 'workshop_image' not in request.data:
                 slz = WorkshopUpdateSerializer(workshop, data=request.data)
-                if slz.is_valid():
-                    slz.save(id=workshop_id, workshop_image=origin_image)
-                    print(slz.data)
-                return Response('', status=status.HTTP_200_OK)
             else:
                 slz = WorkshopCreateSerializer(workshop, data=request.data)
-                if slz.is_valid():
-                    slz.save(id=workshop_id)
-                return Response('', status=status.HTTP_200_OK)
-        
-        return Response('', status=status.HTTP_400_BAD_REQUEST)
-
+            if slz.is_valid():
+                slz.save()
+            return Response('', status=status.HTTP_200_OK)
+        else:
+            return Response({"msg":"권한이 없습니다."}, status=status.HTTP_403_FORBIDDEN)
 
     def delete(self, request, workshop_id):
         workshop = get_object_or_404(Workshop, id=workshop_id)
