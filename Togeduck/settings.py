@@ -87,6 +87,11 @@ INSTALLED_APPS = [
     "django_cleanup.apps.CleanupConfig",
     # django cron tab 설치
     "django_crontab",
+    # django-allauth
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.kakao',
 ]
 
 ASGI_APPLICATION = "Togeduck.asgi.application"
