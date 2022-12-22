@@ -11,6 +11,7 @@ from pathlib import Path
 from datetime import timedelta
 import os, json
 from django.core.exceptions import ImproperlyConfigured
+from corsheaders.defaults import default_headers
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -87,6 +88,10 @@ INSTALLED_APPS = [
     "django_cleanup.apps.CleanupConfig",
     # django cron tab 설치
     "django_crontab",
+    # allauth 설치
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
 ]
 
 ASGI_APPLICATION = "Togeduck.asgi.application"
@@ -130,7 +135,7 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=30),
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': False,
@@ -226,27 +231,33 @@ AUTH_USER_MODEL = 'users.User'
 
 REST_USE_JWT = True
 
-CORS_ALLOW_HEADERS = [
-    "accept",
-    "accept-encoding",
-    "authorization",
-    "content-type",
-    "dnt",
-    "origin",
-    "user-agent",
-    "X-CSRFToken",
-    "x-requested-with",
-    "access-control-allow-origin"
+CORS_ALLOW_ALL_ORIGINS = False
+
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOWED_ORIGINS = [
+    "http://*.carrotww.shop",
+    "http://3.34.40.115",
+    "http://bluecomma.shop",
+    "http://*.bluecomma.shop",
 ]
-CORS_ALLOW_ALL_ORIGINS = True
+
+CORS_ALLOW_HEADERS = list(default_headers) + ['Set-Cookie']
+
+CSRF_USE_SESSIONS = False
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False
+CSRF_COOKIE_SAMESITE = None
+SESSION_COOKIE_SAMESITE = None
+
 # CORS 허용 목록에 ec2 ip를 추가합니다.
 # CORS_ORIGIN_WHITELIST = ['http://3.34.40.115']
-CORS_ORIGIN_WHITELIST = ['http://*.carrotww.shop', 'http://3.34.40.115', 'http://bluecomma.shop']
+CORS_ORIGIN_WHITELIST = ['http://*.carrotww.shop', 'http://3.34.40.115', 'http://bluecomma.shop', 'http://*.bluecomma.shop']
 
 # CSRF 허용 목록을 CORS와 동일하게 설정합니다.
 CSRF_TRUSTED_ORIGINS = CORS_ORIGIN_WHITELIST
 
 # articles app의 articlecron.py 파일의 get_score 함수 10분마다 실행
 CRONJOBS = [
-    ('10 * * * *', 'articles.articlecron.get_score')
+    ('1 * * * *', 'articles.cron.get_score', '>> /testlog.log')
 ]

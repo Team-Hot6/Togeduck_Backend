@@ -11,7 +11,7 @@ import json, os
 from pathlib import Path
 from django.db.models import Count
 # test
-from .articlecron import get_score
+from .cron import get_score
 from django.db.models import Count
 from datetime import datetime
 from django.db import transaction
@@ -216,3 +216,8 @@ class ReplyDeleteView(APIView):
             reply.delete()
             return Response({"msg":"삭제 완료!"},status=status.HTTP_200_OK)
         return Response({"msg":"작성자 본인만 삭제가 가능합니다."}, status=status.HTTP_403_FORBIDDEN)
+
+class test(APIView):
+    def get(self, request):
+        get_score()
+        return Response
