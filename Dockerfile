@@ -17,7 +17,13 @@ WORKDIR /app/
 COPY ./django/requirements.txt .
 
 # 프로젝트 실행에 필요한 패키지들을 설치합니다.
+RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
+
+# for django-crontab
+RUN chmod -R 777 /app #권한 설정
+RUN apt-get update
+RUN apt-get install -y cron && touch ./score.log #crontab 설치 및 로그파일 생성
 
 # gunicorn을 사용하기 위한 패키지를 설치합니다.
 RUN pip install uvicorn gunicorn psycopg2
