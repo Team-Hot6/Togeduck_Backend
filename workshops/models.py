@@ -32,6 +32,7 @@ class Workshop(models.Model):
     participant = models.ManyToManyField(User, related_name='workshop_participant', blank=True, through='WorkshopApply', through_fields=('workshop', 'guest'),) 
     likes = models.ManyToManyField(User, related_name='workshop_likes', blank=True)
     views = models.BigIntegerField(default=0)
+    address2 = models.CharField(max_length=20)
 
     def __str__(self):
         return self.title 
