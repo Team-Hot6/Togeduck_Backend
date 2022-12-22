@@ -63,12 +63,6 @@ else:
 # Application definition
 
 INSTALLED_APPS = [
-
-    # 마이그레이션을 위한 추가
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-
     "daphne",
     # channels 충돌을 피하기 위해 맨 위
     "channels",
