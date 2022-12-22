@@ -63,12 +63,6 @@ else:
 # Application definition
 
 INSTALLED_APPS = [
-
-    # 마이그레이션을 위한 추가
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-
     "daphne",
     # channels 충돌을 피하기 위해 맨 위
     "channels",
@@ -93,6 +87,11 @@ INSTALLED_APPS = [
     "django_cleanup.apps.CleanupConfig",
     # django cron tab 설치
     "django_crontab",
+    # django-allauth
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.kakao',
 ]
 
 ASGI_APPLICATION = "Togeduck.asgi.application"
@@ -186,12 +185,7 @@ TEMPLATES = [
 ]
 # settings.py 166번줄에 추가
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
+
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 

@@ -60,7 +60,7 @@ class ArticleDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Article
-        exclude = ('created_at',)
+        fields = ('id','user','category','category_id','time','date','like','title','content','article_image','views')
 
 # 댓글 작성
 class CommentCreateSerializer(serializers.ModelSerializer):

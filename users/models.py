@@ -34,7 +34,7 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser):
     email = models.EmailField("이메일" , max_length=255, unique=True) 
     nickname = models.CharField("닉네임", max_length=15, unique=True)
-    hobby = models.ManyToManyField('workshops.Hobby')
+    hobby = models.ManyToManyField('workshops.Hobby', blank=True)
     profile_image = models.ImageField(default='/default_profile/default.PNG', upload_to=rename_imagefile_to_uuid)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
