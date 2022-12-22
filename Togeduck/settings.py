@@ -63,6 +63,12 @@ else:
 # Application definition
 
 INSTALLED_APPS = [
+
+    # 마이그레이션을 위한 추가
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+
     "daphne",
     # channels 충돌을 피하기 위해 맨 위
     "channels",
@@ -183,6 +189,11 @@ TEMPLATES = [
         },
     },
 ]
+# settings.py 166번줄에 추가
+
+
+# Database
+# https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
