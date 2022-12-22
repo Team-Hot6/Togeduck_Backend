@@ -88,10 +88,11 @@ INSTALLED_APPS = [
     "django_cleanup.apps.CleanupConfig",
     # django cron tab 설치
     "django_crontab",
-    # allauth 설치
+    # django-allauth
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
+    'allauth.socialaccount.providers.kakao',
 ]
 
 ASGI_APPLICATION = "Togeduck.asgi.application"
@@ -183,6 +184,8 @@ TEMPLATES = [
         },
     },
 ]
+# settings.py 166번줄에 추가
+
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
@@ -259,5 +262,5 @@ CSRF_TRUSTED_ORIGINS = CORS_ORIGIN_WHITELIST
 
 # articles app의 articlecron.py 파일의 get_score 함수 10분마다 실행
 CRONJOBS = [
-    ('1 * * * *', 'articles.cron.get_score', '>> /testlog.log')
+    ('1 * * * *', 'articles.cron.get_score', '>> /score.log')
 ]
