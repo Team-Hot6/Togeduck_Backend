@@ -24,11 +24,11 @@ class ArticleView(ListAPIView):
     
     pagination_class = article_total_page
     serializer_class = ArticleListSerializer
-    queryset = Article.objects.all()
+    queryset = Article.objects.all().order_by('-created_at')
     
     def get(self, request):
         get_category_id = self.request.GET.get('category')
-        sort = self.request.GET.get('sort').order_by('-created_at')
+        sort = self.request.GET.get('sort')
 
         # category & sort 둘 다 있는 경우
         if get_category_id and sort:
