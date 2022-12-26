@@ -28,7 +28,7 @@ class ArticleView(ListAPIView):
     
     def get(self, request):
         get_category_id = self.request.GET.get('category')
-        sort = self.request.GET.get('sort')
+        sort = self.request.GET.get('sort').order_by('-created_at')
 
         # category & sort 둘 다 있는 경우
         if get_category_id and sort:
