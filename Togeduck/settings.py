@@ -32,13 +32,11 @@ def get_secret(setting, secret=secret):
         error_msg = "Set key '{0}' in secret.json".format(setting)
         raise ImproperlyConfigured(error_msg)
 
-# USAGE
-
 SECRET_KEY = get_secret('SECRET_KEY') # my-secret-key
 
-# SECURITY WARNING: don't run with debug turned on in production!
-#DEBUG = os.environ.get('DEBUG', '0') == '1'
-DEBUG = True # 로컬 사진 나옴
+DEBUG = os.environ.get('DEBUG', '0') == '1'
+# DEBUG = True # 로컬 사진 나옴
+# ALLOWED_HOSTS = ['https://www.carrotww.shop.*', 'https://3.34.40.115.*', 'https://www.bluecomma.shop.*', 'https://bluecomma.shop.*', 'http:127.0.0.1:8000.*']
 ALLOWED_HOSTS = ['*']
 
 POSTGRES_DB = os.environ.get('POSTGRES_DB', '')
@@ -238,16 +236,6 @@ CORS_ALLOW_ALL_ORIGINS = False
 
 CORS_ALLOW_CREDENTIALS = True
 
-CORS_ALLOWED_ORIGINS = [
-    "http://*.carrotww.shop",
-    "http://3.34.40.115",
-    "http://bluecomma.shop",
-    "http://*.bluecomma.shop",
-    "http://127.0.0.1:5500",
-]
-
-CORS_ALLOW_HEADERS = list(default_headers) + ['Set-Cookie']
-
 CSRF_USE_SESSIONS = False
 SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = False
@@ -255,8 +243,7 @@ CSRF_COOKIE_SAMESITE = None
 SESSION_COOKIE_SAMESITE = None
 
 # CORS 허용 목록에 ec2 ip를 추가합니다.
-# CORS_ORIGIN_WHITELIST = ['http://3.34.40.115']
-CORS_ORIGIN_WHITELIST = ['https://www.carrotww.shop', 'https://3.34.40.115', 'http://bluecomma.shop', 'http://*.bluecomma.shop']
+CORS_ORIGIN_WHITELIST = ['https://www.carrotww.shop', 'https://3.34.40.115', 'https://www.bluecomma.shop', 'https://bluecomma.shop', 'http://127.0.0.1:5500']
 
 # CSRF 허용 목록을 CORS와 동일하게 설정합니다.
 CSRF_TRUSTED_ORIGINS = CORS_ORIGIN_WHITELIST
