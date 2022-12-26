@@ -37,8 +37,8 @@ def get_secret(setting, secret=secret):
 SECRET_KEY = get_secret('SECRET_KEY') # my-secret-key
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', '0') == '1'
-
+#DEBUG = os.environ.get('DEBUG', '0') == '1'
+DEBUG = True # 로컬 사진 나옴
 ALLOWED_HOSTS = ['*']
 
 POSTGRES_DB = os.environ.get('POSTGRES_DB', '')
@@ -243,6 +243,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://3.34.40.115",
     "http://bluecomma.shop",
     "http://*.bluecomma.shop",
+    "http://127.0.0.1:5500",
 ]
 
 CORS_ALLOW_HEADERS = list(default_headers) + ['Set-Cookie']
