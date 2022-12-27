@@ -60,7 +60,7 @@ class ArticleDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Article
-        fields = ('id','user','category','category_id','time','date','like','title','content','article_image','views')
+        fields = ('id','user', 'user_id','category','category_id','time','date','like','title','content','article_image','views')
 
 # 댓글 작성
 class CommentCreateSerializer(serializers.ModelSerializer):
@@ -86,9 +86,10 @@ class ReplySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Reply
-        exclude = ('created_at',)
+        fields = ('article', 'comment', 'content', 'date', 'time', 'id', 'user', 'user_id')
+        # exclude = ('created_at',)
 
-# 대댓글
+# 댓글
 class CommentListSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
     reply_comment = ReplySerializer(many=True)
@@ -98,7 +99,7 @@ class CommentListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = "__all__"
+        fields = ('article', 'content', 'created_at', 'id', 'reply_comment', 'user', 'user_id')
 
 # 대댓글 작성
 class ReplyCreateSerializer(serializers.ModelSerializer):
