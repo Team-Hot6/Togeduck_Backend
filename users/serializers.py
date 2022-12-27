@@ -154,7 +154,5 @@ class MypageInfoPutSerializer(serializers.ModelSerializer):
         return data
 
 
-class UserNicknameSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ('nickname',)
+
+    

@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework import permissions
 from rest_framework.generics import get_object_or_404
 from users.models import User
-from users.serializers import CustomTokenObtainPairSerializer, UserSerializer, ChangePasswordSerializer, MypageInfoPutSerializer, UserNicknameSerializer
+from users.serializers import CustomTokenObtainPairSerializer, UserSerializer, ChangePasswordSerializer, MypageInfoPutSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import (
     TokenObtainPairView   
@@ -108,10 +108,3 @@ class KakaoCallBackView(APIView):
             )
             refresh = CustomTokenObtainPairSerializer.get_token(user)
             return Response({'refresh': str(refresh), 'access': str(refresh.access_token), "msg" : "회원가입 성공"}, status=status.HTTP_200_OK)
-
-
-class UserNicknameView(APIView):
-    def get(self,request, user_id):
-        user = User.objects.get(id=user_id)
-        serializer = UserNicknameSerializer(user)
-        return Response(serializer.data, status=status.HTTP_200_OK)

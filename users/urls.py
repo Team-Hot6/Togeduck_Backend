@@ -13,5 +13,4 @@ urlpatterns = [ # jwt
     path('<int:user_id>/put/', views.MypageInfoPutView.as_view(), name="ProfileView"), # 마이페이지 - 개인정보 수정
     path('change_password/<int:pk>/', views.ChangePasswordView.as_view(), name='auth_change_password'),
     path('kakao/callback/', views.KakaoCallBackView.as_view(), name='kakao_callback_view'), # 카카오 콜백 함수
-    path('nickname/<int:user_id>/', views.UserNicknameView.as_view(), name="user_nickname_view"),
 ]
