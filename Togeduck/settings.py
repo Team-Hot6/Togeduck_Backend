@@ -256,7 +256,7 @@ SESSION_COOKIE_SAMESITE = None
 
 # CORS 허용 목록에 ec2 ip를 추가합니다.
 # CORS_ORIGIN_WHITELIST = ['http://3.34.40.115']
-CORS_ORIGIN_WHITELIST = ['http://*.carrotww.shop', 'http://3.34.40.115', 'http://bluecomma.shop', 'http://*.bluecomma.shop']
+CORS_ORIGIN_WHITELIST = ['https://www.carrotww.shop', 'https://3.34.40.115', 'http://bluecomma.shop', 'http://*.bluecomma.shop']
 
 # CSRF 허용 목록을 CORS와 동일하게 설정합니다.
 CSRF_TRUSTED_ORIGINS = CORS_ORIGIN_WHITELIST

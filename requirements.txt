@@ -42,3 +42,5 @@ typing-extensions==4.4.0
 tzdata==2022.7
 urllib3==1.26.13
 zope.interface==5.5.2
+channels-redis==4.0.0
+redis==4.4.0

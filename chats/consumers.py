@@ -25,7 +25,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
-        print(text_data_json)
         room_id = text_data_json['room_id']
         message = text_data_json['message']
         # 프론트에서 sender_id, receiver_id 보내주는 로직 필요
@@ -95,6 +94,7 @@ class CreateRoom(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
+        print(text_data_json)
         room_id = text_data_json['room_id']
         message = text_data_json['message']
         sender_id = text_data_json['sender_id']
@@ -142,6 +142,7 @@ class CreateRoom(AsyncWebsocketConsumer):
     async def chat_message(self, event):
 
         message_data = json.loads(event['message'])
+        print(message_data)
         message = message_data['message']
         sender = message_data['sender']
         cur_time = message_data['cur_time']
