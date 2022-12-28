@@ -77,11 +77,13 @@
 <img src="https://user-images.githubusercontent.com/113074921/207654055-4deed7a7-cf6e-452f-8746-f2442abe286c.png" width="700px" height="500px">
 
 ## 📋 ERD
-<img src="https://user-images.githubusercontent.com/113074921/207654453-b67f223a-c317-4fea-837f-3d2d984530ae.png" width="700px" height="500px">
-<img src="https://user-images.githubusercontent.com/113074921/207654666-9f69b4fb-1988-478e-9892-cde01d9c99ad.png" width="700px" height="500px">
+https://www.erdcloud.com/d/aE5HXR2pEyvyvAHYr
+<img src="https://user-images.githubusercontent.com/109906864/209798825-4eef219b-1da3-455c-b0df-a0e9c4ab274d.png" width="700px" height="500px">
 
 ## 📋 API 설계
 https://www.notion.so/7b72107e734640e4b92d6305ec0db12b?v=c88e7821924c401ea4e8f2f9372e70f1
+<img src="https://velog.velcdn.com/images/def3ff/post/566cf838-2456-4603-bc73-cbd211e409ba/image.jpg">
+
 
 ## ⭐ 커밋 컨벤션
  - create : 생성
@@ -109,7 +111,7 @@ first_name = models.CharField(max_length=20)
 last_name = models.CharField(max_length=40)
 
 # 🕖 중간 점검 2022/12/02 ~ 2022/12/14
-## 남은 기간 목표
+## 남은 기간 목표(달성한 목표는 체크박스에서 체크로 표시)
 ### 1. 기능 다듬기
 - [x] Article app 과 Workshop app 에서 Category 별 최신순, 인기순 정렬 기능(CRUD 다듬기)
 
@@ -129,9 +131,13 @@ last_name = models.CharField(max_length=40)
 - [x] AWS 서버를 이용하여 Daphne를 이용한 배포 예정
 
 # 🏹 Trouble Shooting
-- 
+- docker의 volume이 지워지지 않아 migration 오류 발생 <br>
+  해결 : docker system prune -a -volumes 명령어로 볼륨까지 모두 삭제 후 migration 진행<br>
+- SSL 적용 후 채팅 기능 작동하지 않음 <br>
+  해결 : 인증서는 Domain에 적용하였는데 Url은 IP 주소를 사용하여 발생한 문제로, IP 주소를 인증서가 적용된 Domain으로 변경하여 해결
 
-# 💡 사용자 피드백
+
+# 💡 사용자 피드백 (개선 완료된 사항)
 - 회원가입 시 카테고리를 선택했을 때 아무 효과가 없어서 카테고리가 선택되었는지 안되었는지 알 수가 없어요
 - 회원가입 시 취미 카테고리를 더블 클릭하면 브라우저가 멈춰버려요
 - 카카오 계정으로 로그인 시 네비바의 닉네임이 undefined로 표기되요
@@ -148,3 +154,6 @@ last_name = models.CharField(max_length=40)
 - 비로그인 사용자가 댓글 작성 및 추천하기 클릭 시 401 alert 창이 떠요
 - 워크샵의 지역이 도 단위로 구성되어 있는데 보다 상세하게 나누는게 좋을 것 같아요
 - 워크샵에 댓글 작성 후 입력 창이 유지되는데 작성 및 수정 할 때만 입력 창이 보이면 좋을 것 같아요
+
+# 시연영상 링크
+https://vimeo.com/784742380
