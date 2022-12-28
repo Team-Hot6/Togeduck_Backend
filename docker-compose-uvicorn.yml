@@ -1,4 +1,3 @@
-# daphne 로 asgi, wsgi 동시 처리
 version: '3.8'
 
 volumes:
@@ -28,11 +27,11 @@ services:
     networks:
       carrot:
         ipv4_address: 192.168.16.3
-  
+
   backend:
     container_name: backend
     build: ./backend/
-    command: sh -c "python manage.py collectstatic --no-input && python manage.py migrate && daphne -b 0.0.0.0 -p 8000 Togeduck.asgi:application"
+    command: sh -c "python manage.py collectstatic --no-input && python manage.py migrate && uvicorn Togeduck.asgi:application --host 0.0.0.0 --port 8000 --reload --ws websockets"
     volumes:
       - ./backend/django/:/app/
       - /etc/localtime:/etc/localtime:ro
@@ -57,7 +56,7 @@ services:
     networks:
       carrot:
         ipv4_address: 192.168.16.4
-  
+
   nginx:
     container_name : nginx
     image: nginx:1.23.2
@@ -73,7 +72,7 @@ services:
     restart: always
     networks:
       carrot:
-        ipv4_address: 192.168.16.6
+        ipv4_address: 192.168.16.5
 
 networks:
   carrot:
