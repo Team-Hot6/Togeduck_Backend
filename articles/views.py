@@ -96,35 +96,22 @@ class ArticleCreateView(APIView):
             return Response(serialzier.data, status=status.HTTP_201_CREATED)
         return Response(serialzier.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# 게시글 상세페이지(조회/추천/수정/삭제)
 class ArticleDetailView(APIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     def get(self, request, article_id):
         article = get_object_or_404(Article, id=article_id)
-        # 당일날 밤 12시에 쿠키 초기화
-        tomorrow = datetime.replace(datetime.now(), hour=23, minute=59, second=0)
-        expires = datetime.strftime(tomorrow, "%a, %d-%b-%Y %H:%M:%S GMT")
-        
-        serializer = ArticleDetailSerializer(article)
-        
-        response = Response(serializer.data, status=status.HTTP_200_OK)
-
-        print(request.COOKIES)
-        # 쿠키 읽기 & 생성
-        if request.COOKIES.get('hit'):
-            cookies = request.COOKIES.get('hit')
-            cookies_list = cookies.split('|')
-            if str(article_id) not in cookies_list:
-                response.set_cookie('hit', cookies+f'|{article_id}', expires=expires) # 쿠키 생성
-                with transaction.atomic(): # 모델 필드인 views에 1 추가
-                    article.views += 1
-                    article.save()
+        view_str = self.request.GET.get('articleview')
+        if view_str:
+            view_list = view_str.split('|')
+            if str(article_id) not in view_list:
+                article.views += 1
+                article.save()
         else:
-            response.set_cookie('hit', article_id, expires=expires)
             article.views += 1
             article.save()
+        slz = ArticleDetailSerializer(article)
         
-        return response
+        return Response(slz.data, status=status.HTTP_200_OK)
     
     def post(self, request, article_id):
         article = get_object_or_404(Article, id=article_id)
