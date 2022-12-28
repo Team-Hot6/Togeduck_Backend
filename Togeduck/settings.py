@@ -34,8 +34,8 @@ def get_secret(setting, secret=secret):
 
 SECRET_KEY = get_secret('SECRET_KEY') # my-secret-key
 
-# DEBUG = os.environ.get('DEBUG', '0') == '1'
-DEBUG = True # 로컬 사진 나옴
+DEBUG = os.environ.get('DEBUG', '0') == '1'
+# DEBUG = True # 로컬 사진 나옴
 # ALLOWED_HOSTS = ['https://www.carrotww.shop.*', 'https://3.34.40.115.*', 'https://www.bluecomma.shop.*', 'https://bluecomma.shop.*', 'http:127.0.0.1:8000.*']
 ALLOWED_HOSTS = ['*']
 
@@ -249,6 +249,7 @@ CSRF_COOKIE_SAMESITE = None
 SESSION_COOKIE_SAMESITE = None
 
 # CORS 허용 목록에 ec2 ip를 추가합니다.
+
 CORS_ORIGIN_WHITELIST = ['https://www.carrotww.shop',
                         'https://3.34.40.115',
                         'https://www.bluecomma.shop',
@@ -256,6 +257,8 @@ CORS_ORIGIN_WHITELIST = ['https://www.carrotww.shop',
                         "http://127.0.0.1:5500",
                         "http://localhost:5500",
                         "http://127.0.0.1:8000"]
+
+CORS_ORIGIN_WHITELIST = ['https://www.carrotww.shop', 'https://3.34.40.115', 'http://bluecomma.shop', 'http://*.bluecomma.shop']
 
 # CSRF 허용 목록을 CORS와 동일하게 설정합니다.
 CSRF_TRUSTED_ORIGINS = CORS_ORIGIN_WHITELIST
