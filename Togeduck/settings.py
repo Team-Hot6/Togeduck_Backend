@@ -105,6 +105,12 @@ CHANNEL_LAYERS = {
     },
 }
 
+# CHANNEL_LAYERS = {
+#     "default": {
+#         "BACKEND": "channels.layers.InMemoryChannelLayer"
+#     }
+# }
+
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
@@ -235,16 +241,18 @@ REST_USE_JWT = True
 CORS_ALLOW_ALL_ORIGINS=  False
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
+    "https://*.carrotww.shop",
+    "https://3.34.40.115",
+    "https://bluecomma.shop",
+    "https://www.bluecomma.shop",
     "http://127.0.0.1:5500",
-    "http://localhost:5500",
-    "http://127.0.0.1:8000"
 ]
 
 CORS_ALLOW_HEADERS = list(default_headers) + ['Set-Cookie']
 
 CSRF_USE_SESSIONS = False
-SESSION_COOKIE_SECURE = False
-CSRF_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 CSRF_COOKIE_SAMESITE = None
 SESSION_COOKIE_SAMESITE = None
 
