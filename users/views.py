@@ -38,6 +38,14 @@ class MypageView(APIView): # 마이페이지 - 전체적인 정보 불러오기
         serializer = MypageSerializer(user)
         return Response(serializer.data)
 
+    def delete(self, request, user_id):
+        user = get_object_or_404(User, id=user_id)
+        if request.user == user:
+            user.delete()
+            return Response('사용자 삭제 완료',status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response('권한이 없습니다', status=status.HTTP_403_FORBIDDEN)
+
 
 # 비밀번호 변경
 class ChangePasswordView(generics.UpdateAPIView): # 업데이트 전용 뷰
@@ -78,7 +86,7 @@ class KakaoCallBackView(APIView):
                 if social_user.provider != "kakao":
                     return Response({"error": "카카오로 가입한 유저가 아닙니다."}, status=status.HTTP_400_BAD_REQUEST)
                 
-                refresh = RefreshToken.for_user(user)
+                refresh = CustomTokenObtainPairSerializer.get_token(user)
                 return Response({'refresh': str(refresh), 'access': str(refresh.access_token), "msg" : "로그인 성공"}, status=status.HTTP_200_OK)
             
             # 동일한 이메일의 유저가 있지만, social계정이 아닐때 
@@ -98,5 +106,5 @@ class KakaoCallBackView(APIView):
                 uid=new_user.email,
                 provider="kakao",
             )
-            refresh = RefreshToken.for_user(new_user)
+            refresh = CustomTokenObtainPairSerializer.get_token(user)
             return Response({'refresh': str(refresh), 'access': str(refresh.access_token), "msg" : "회원가입 성공"}, status=status.HTTP_200_OK)
