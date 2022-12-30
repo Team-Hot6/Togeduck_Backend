@@ -34,8 +34,8 @@ def get_secret(setting, secret=secret):
 
 SECRET_KEY = get_secret('SECRET_KEY') # my-secret-key
 
-# DEBUG = os.environ.get('DEBUG', '0') == '1'
-DEBUG = True # 로컬 사진 나옴
+DEBUG = os.environ.get('DEBUG', '0') == '1'
+# DEBUG = True # 로컬 사진 나옴
 # ALLOWED_HOSTS = ['https://www.carrotww.shop.*', 'https://3.34.40.115.*', 'https://www.bluecomma.shop.*', 'https://bluecomma.shop.*', 'http:127.0.0.1:8000.*']
 ALLOWED_HOSTS = ['*']
 
@@ -96,20 +96,20 @@ INSTALLED_APPS = [
 ASGI_APPLICATION = "Togeduck.asgi.application"
 WSGI_APPLICATION = "Togeduck.wsgi.application"
 
-# CHANNEL_LAYERS = {
-#     "default": {
-#         "BACKEND": "channels_redis.core.RedisChannelLayer",
-#         "CONFIG": {
-#             "hosts": [("192.168.16.3", 6379)],
-#         },
-#     },
-# }
-
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer"
-    }
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("192.168.16.3", 6379)],
+        },
+    },
 }
+
+# CHANNEL_LAYERS = {
+#     "default": {
+#         "BACKEND": "channels.layers.InMemoryChannelLayer"
+#     }
+# }
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
