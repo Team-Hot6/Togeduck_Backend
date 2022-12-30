@@ -238,10 +238,8 @@ AUTH_USER_MODEL = 'users.User'
 
 REST_USE_JWT = True
 
-CORS_ALLOW_ALL_ORIGINS = False
-
+CORS_ALLOW_ALL_ORIGINS=  False
 CORS_ALLOW_CREDENTIALS = True
-
 CORS_ALLOWED_ORIGINS = [
     "https://*.carrotww.shop",
     "https://3.34.40.115",
@@ -259,7 +257,16 @@ CSRF_COOKIE_SAMESITE = None
 SESSION_COOKIE_SAMESITE = None
 
 # CORS 허용 목록에 ec2 ip를 추가합니다.
-CORS_ORIGIN_WHITELIST = ['https://www.carrotww.shop', 'https://3.34.40.115', 'https://www.bluecomma.shop', 'https://bluecomma.shop', 'http://127.0.0.1:5500']
+
+CORS_ORIGIN_WHITELIST = ['https://www.carrotww.shop',
+                        'https://3.34.40.115',
+                        'https://www.bluecomma.shop',
+                        'https://bluecomma.shop',
+                        "http://127.0.0.1:5500",
+                        "http://localhost:5500",
+                        "http://127.0.0.1:8000"]
+
+CORS_ORIGIN_WHITELIST = ['https://www.carrotww.shop', 'https://3.34.40.115', 'http://bluecomma.shop', 'http://*.bluecomma.shop']
 
 # CSRF 허용 목록을 CORS와 동일하게 설정합니다.
 CSRF_TRUSTED_ORIGINS = CORS_ORIGIN_WHITELIST

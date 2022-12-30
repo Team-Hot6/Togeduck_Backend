@@ -45,6 +45,11 @@ uvicorn==0.13.3
 uvloop==0.15.1
 websockets==8.1
 zope.interface==5.5.2
+<<<<<<< HEAD
 django-allauth==0.51.0
 channels-redis==4.0.0
 redis==4.4.0
+=======
+channels-redis==4.0.0
+redis==4.4.0
+>>>>>>> 6b9826ed794bc828bd236fe8ae087e3bf9300c0a
