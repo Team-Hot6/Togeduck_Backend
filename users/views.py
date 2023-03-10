@@ -21,7 +21,7 @@ class UserView(APIView):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True): # 유효성 검사시 에러 메세지 띄우기
             serializer.save()
-            return Response({"message":"가입완료 ㅇㅅㅇ"}, status=status.HTTP_201_CREATED)
+            return Response({"message":"회원 가입 완료"}, status=status.HTTP_201_CREATED)
         else:
             return Response({"message":f"${serializer.errors}"}, status=status.HTTP_400_BAD_REQUEST)
 
