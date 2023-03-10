@@ -34,8 +34,8 @@ def get_secret(setting, secret=secret):
 
 SECRET_KEY = get_secret('SECRET_KEY') # my-secret-key
 
-DEBUG = os.environ.get('DEBUG', '0') == '1'
-# DEBUG = True # 로컬 사진 나옴
+# DEBUG = os.environ.get('DEBUG', '0') == '1'
+DEBUG = True # 로컬 사진 나옴
 # ALLOWED_HOSTS = ['https://www.carrotww.shop.*', 'https://3.34.40.115.*', 'https://www.bluecomma.shop.*', 'https://bluecomma.shop.*', 'http:127.0.0.1:8000.*']
 ALLOWED_HOSTS = ['*']
 
@@ -223,7 +223,8 @@ USE_TZ = False
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_ROOT = BASE_DIR / "static/"
+# STATIC_ROOT = BASE_DIR / "static"
+STATIC_ROOT=os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = "/static/"
 
 MEDIA_ROOT = BASE_DIR / "media"
